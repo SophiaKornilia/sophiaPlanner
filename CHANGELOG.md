@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 ### Added
-- Placeholder for upcoming features and changes.
+- Created the initial file structure under `pages` for the project.
 
 ### Changed
 - Placeholder for updates to existing functionality.
