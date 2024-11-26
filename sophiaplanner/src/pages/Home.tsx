@@ -1,7 +1,11 @@
+import { Header } from "../components/Header";
+import Register from "../components/Register";
+
 const Home = () => {
   return (
     <div>
-      <h1>Welcome to the App</h1>
+      <Header />
+      <Register />
     </div>
   );
 };

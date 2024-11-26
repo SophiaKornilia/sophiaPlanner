@@ -1,0 +1,14 @@
+/* Button.css */
+.custom-button {
+    font-size: 1.125rem; /* Tailwind motsvarar text-lg */
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem; /* Tailwind motsvarar rounded-md */
+    background-color: #66D1B6;
+    color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .custom-button:hover {
+    background-color: #5cbfa8;
+  }
+  
