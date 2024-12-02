@@ -1,8 +1,11 @@
 // Import the functions you need from the SDKs you need
-
+const admin = require("firebase-admin");
 const { initializeApp } = require("firebase/app");
 const { getAuth } = require("firebase/auth");
 const { getFirestore } = require("firebase/firestore");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -20,9 +23,17 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
-const auth = getAuth(app);
-const db = getFirestore(app);
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(
+      JSON.parse(process.env.FIREBASE_ADMIN_KEY)
+    ),
+    databaseURL: "http://sophiaplanner-123.firebaseapp.com",
+  });
+}
 
-module.exports = { auth, db };
+module.exports = { auth, db, admin, firebaseApp };
