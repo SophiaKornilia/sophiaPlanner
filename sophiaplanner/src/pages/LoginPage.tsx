@@ -1,51 +1,76 @@
 import { Header } from "../components/Header";
-import { useState } from "react";
-import { auth } from "../../config/firebas-config";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { useContext, useState } from "react";
 import "../styles/index.css";
-import { FirebaseError } from "firebase/app";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+
+interface loginData {
+  email: string;
+  password: string;
+}
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loginForm, setLoginForm] = useState<loginData>({
+    email: "",
+    password: "",
+  });
+  const { setUser, setToken } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email) {
+    if (!loginForm.email) {
       alert("Email fältet är tomt!");
       return;
     }
-    if (!password) {
+    if (!loginForm.password) {
       alert("Lösenords fältet är tomt!");
       return;
     }
 
     try {
-      // Använd signInWithEmailAndPassword för att logga in användaren
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
+      const response = await fetch("http://localhost:3000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginForm),
+      });
 
-      // Visa feedback till användaren
-      alert("Inloggning lyckades! Välkommen " + user.email);
-      //katodo om user.role = teacher else:
-      navigate("/DashboardTeacher");
-      console.log("Användare inloggad:", user);
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        // Nu har TypeScript information om att det är en FirebaseError
-        console.error("Firebase error code:", error.code);
-        console.error("Firebase error message:", error.message);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("User logedin successfully", data);
+
+        //spara användare och token i context
+        setUser(data.user);
+        console.log("User set in context:", data.user);
+        setToken(data.accessToken);
+        console.log("Token set in context:", data.accessToken);
+
+        // Navigera till rätt dashboard
+        if (data.user.role === "teacher") {
+          navigate("/DashboardTeacher");
+        } else if (data.user.role === "student") {
+          navigate("/DashboardStudent");
+        } else {
+          console.log("Ingen roll satt/hittades!");
+
+          navigate("/");
+        }
+      } else if (response.status === 401) {
+        alert("Felaktiga inloggningsuppgifter!");
+      } else if (response.status === 500) {
+        alert("Ett serverfel inträffade. Försök igen senare.");
       } else {
-        // Hantera andra typer av fel
-        console.error("Unknown error:", error);
+        const error = await response.json();
+        alert(error.message || "Ett okänt fel inträffade.");
       }
+    } catch (error) {
+      console.error("Nätverksfel:", error);
+      alert(
+        "Kunde inte ansluta till servern. Kontrollera din internetanslutning."
+      );
     }
   };
 
@@ -61,9 +86,9 @@ const Login = () => {
             className="mb-4 p-2 w-full max-w-xs border rounded-md"
             type="text"
             id="email"
-            value={email}
+            value={loginForm.email}
             onChange={(e) => {
-              setEmail(e.target.value);
+              setLoginForm({ ...loginForm, email: e.target.value });
             }}
             required
           ></input>
@@ -72,16 +97,16 @@ const Login = () => {
             className="mb-4 p-2 w-full max-w-xs border rounded-md"
             type="password"
             id="password"
-            value={password}
+            value={loginForm.password}
             onChange={(e) => {
-              setPassword(e.target.value);
+              setLoginForm({ ...loginForm, password: e.target.value });
             }}
             required
           ></input>
           <button
             className="custom-button hover:bg-opacity-80"
             onClick={handleLogin}
-          >
+          > 
             Logga in
           </button>
         </form>
