@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface teacher {
   name: string;
@@ -14,21 +15,39 @@ const Register = () => {
     password: "",
     role: "teacher",
   });
+
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleClick = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.name) {
+      alert("Namnfälter får inte var tomt");
+      return;
+    }
+    if (!formData.email) {
+      alert("Email får inte var tomt");
+      return;
+    }
 
     if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
       alert("Ange en giltig e-postadress!");
       return;
     }
-    if (password === passwordRepeat) {
-      setFormData({ ...formData, password: password });
-    } else {
-      alert("Lösenorden är inte samma!");
+
+    if (password.length < 6) {
+      alert("Lösenordet måste vara minst 6 karaktärer");
+      return;
     }
+
+    if (password !== passwordRepeat) {
+      alert("Lösenorden är inte samma!");
+      return;
+    }
+
+    const updatedFormData = { ...formData, password: password };
 
     try {
       const response = await fetch("http://localhost:3000/api/register", {
@@ -36,13 +55,15 @@ const Register = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updatedFormData),
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log("User registered successfully:", data);
-        alert("Registreringen lyckades!");
+        alert("Registreringen lyckades, du omdirigeras nu till login sidan!");
+
+        navigate("/LoginPage");
       } else {
         const error = await response.json();
         if (error.message === "Email already exists") {
@@ -81,7 +102,9 @@ const Register = () => {
             }
             required
           ></input>
-          <label className="mb-2 text-lg font-semibold">Lösenord:</label>
+          <label className="mb-2 text-lg font-semibold">
+            Lösenord(minst 6 karaktärer):
+          </label>
           <input
             className="mb-4 p-2 w-full max-w-xs border rounded-md"
             type="password"
