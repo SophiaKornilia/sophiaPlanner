@@ -1,10 +1,12 @@
+import { Header } from "../components/Header";
+
 const DashboardStudent = () => {
-    return (
-      <div>
-        <h1>Welcome to DashboardStudent</h1>
-      </div>
-    );
-  };
-  
-  export default DashboardStudent;
-  
+  return (
+    <div className="">
+      <Header />
+      <div className="h-screen flex justify-center items-center bg-background font-sans  "></div>
+    </div>
+  );
+};
+
+export default DashboardStudent;

@@ -81,6 +81,16 @@ export const Header = () => {
                   Skapa elevplaneringar
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to={"/DashboardTeacher"}
+                  className={({ isActive }) =>
+                    isActive ? " font-semibold underline" : "hover:underline"
+                  }
+                >
+                  Home
+                </NavLink>
+              </li>
             </ul>
           </nav>
         </div>

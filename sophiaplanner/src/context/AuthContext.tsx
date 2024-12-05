@@ -33,6 +33,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Vid appens start, läs från localStorage (om inloggning är ihågkommen)
   useEffect(() => {
+    console.log("uid..", user?.uid);
+
     const savedUser = localStorage.getItem("user");
     const savedToken = localStorage.getItem("token");
     if (savedUser && savedToken) {
@@ -42,6 +44,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   // Uppdatera localStorage när användaren ändras
+  //katodo asyncstorage
   useEffect(() => {
     if (user && token) {
       localStorage.setItem("user", JSON.stringify(user));
