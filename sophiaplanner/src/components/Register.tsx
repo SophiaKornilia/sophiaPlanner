@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
+import API_BASE_URL from "../../config/vercel-config";
 interface teacher {
   name: string;
   email: string;
@@ -50,7 +50,8 @@ const Register = () => {
     const updatedFormData = { ...formData, password: password };
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/register", {
+      // const response = await fetch("http://localhost:3000/api/users/register", {
+      const response = await fetch(`${API_BASE_URL}/registerUser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
