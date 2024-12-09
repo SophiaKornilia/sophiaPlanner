@@ -245,3 +245,27 @@ exports.getGroups = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
+exports.getGroupsTest = async (req, res) => {
+  try {
+    const teacherId = "TILzgNruyLSPlsoMQLDD5hsO4fl1";
+
+    if (!teacherId) {
+      return res.status(400).json({ message: "Teacher ID is required" });
+    }
+    const groupsRef = collection(db, "groups");
+    const groupQuery = query(groupsRef, where("teacherId", "==", teacherId));
+    const querySnapshot = await getDocs(groupQuery);
+
+    const groups = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return res.status(200).json({ groups });
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};

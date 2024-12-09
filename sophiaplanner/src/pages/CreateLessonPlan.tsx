@@ -1,10 +1,13 @@
+import { Header } from "../components/Header";
+// import { LessonPlanCreator } from "../components/LessonPlanCreator";
+
 const CreateLessonPlan = () => {
-    return (
-      <div>
-        <h1>Welcome to CreateLessonPlan</h1>
-      </div>
-    );
-  };
-  
-  export default CreateLessonPlan;
-  
+  return (
+    <div>
+      <Header />
+      {/* <LessonPlanCreator/>  */}
+    </div>
+  );
+};
+
+export default CreateLessonPlan;
