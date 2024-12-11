@@ -1,9 +1,9 @@
-const express = require("express");
-const userRoutes = require("./userRoutes");
+// const express = require("express");
+// const userRoutes = require("./userRoutes");
 
-const router = express.Router();
+// const router = express.Router();
 
-// Registrera användar-relaterade routes
-router.use("/users", userRoutes);
+// // Registrera användar-relaterade routes
+// router.use("/users", userRoutes);
 
-module.exports = router;
+// module.exports = router;

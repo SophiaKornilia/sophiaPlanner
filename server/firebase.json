@@ -1,6 +1,7 @@
 {
   "functions": [
     {
+      "timeoutSeconds": 180,
       "source": "functions",
       "codebase": "default",
       "ignore": [
@@ -9,8 +10,12 @@
         "firebase-debug.log",
         "firebase-debug.*.log",
         "*.local"
-      ], 
-      "secrets": ["FIREBASE_CONFIG", "MY_FIREBASE_API_KEY"]
+      ],
+      "secrets": [
+        "FIREBASE_CONFIG",
+        "MY_FIREBASE_API_KEY"
+      ]
     }
   ]
+  
 }
