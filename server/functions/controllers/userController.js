@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 // const { doc, setDoc } = require("firebase-admin/firestore");
 
 //registrera användare/teachers
@@ -62,52 +62,52 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-// //registrera students
-// exports.registerStudent = async (req, res) => {
-//   try {
-//     const { name, userName, password, role, teacherID } = req.body;
 
-//     if (!name || !userName || !role || !password || !teacherID) {
-//       return res.status(400).json({ message: "Missing required fields" });
-//     }
+exports.registerStudent = async (req, res) => {
+  try {
+    //katodo: (vilket id ska användas? koppla till riktigt teacherId?)
 
-//     // Initialisera Firebase Firestore
-//     const db = admin.firestore();
+    //hämta variablar från body
+    //starta databasen
+    //kolla om användaren redan finns i tabellen -> finns return annars fortsätt
+    //hasha lösenord
+    //lägg till i db
 
-//     const studentsRef = db.collection("students");
-//     const existingUser = await studentsRef
-//       .where("userName", "==", userName)
-//       .get();
+    const { password, userName, name, role, teacherId } = req.body;
 
-//     if (!existingUser.empty) {
-//       return res.status(409).json({ message: "Användarnamnet är redan taget" });
-//     }
+    const db = admin.firestore();
 
-//     //hasha lösenordet
-//     const userPassword = password;
-//     const hashedPassword = await bcrypt.hash(userPassword, 10);
+    const studentRef = db.collection("students");
+    const studenExists = await studentRef
+      .where("userName", "==", userName)
+      .get();
 
-//     //sparar data i firestore
-//     const userDocRef = doc(db, "students", userName);
-//     await setDoc(userDocRef, {
-//       name,
-//       userName,
-//       role,
-//       password: hashedPassword,
-//       teacherID: teacherID,
-//       createdAt: admin.firestore.FieldValue.serverTimestamp(),
-//     });
+    if (!studenExists.empty) {
+      return res.status(409).json({ message: "Användarnamnet är redan taget" });
+    }
+    const userPassword = password;
+    const hashedPassword = await bcrypt.hash(userPassword, 10);
 
-//     res
-//       .status(201)
-//       .json({
-//         message: "Student registered successfully!",
-//         userName: userName,
-//       });
-//   } catch (error) {
-//     console.error("Error registering student:", error);
-//     res
-//       .status(500)
-//       .json({ message: "Internal server error", error: error.message });
-//   }
-// };
+    await db
+      .collection("students")
+      .doc("/" + userName + "/")
+      .create({
+        name: name,
+        role: role,
+        password: hashedPassword,
+        teacherId: teacherId,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+    return res.status(200).json({
+      message: "Student registered successfully!",
+      userName: userName,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
