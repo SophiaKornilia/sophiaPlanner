@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const bcrypt = require("bcrypt");
 const axios = require("axios");
-// const { getApiKey } = require("../config");
+const crypto = require("crypto");
 
 // registrera användare/teachers
 exports.registerUser = async (req, res) => {
@@ -66,11 +66,6 @@ exports.registerUser = async (req, res) => {
 exports.registerStudent = async (req, res) => {
   try {
     // katodo: (vilket id ska användas? koppla till riktigt teacherId?)
-    // hämta variablar från body
-    // starta databasen
-    // kolla om användaren redan finns i tabellen -> finns return annars fortsätt
-    // hasha lösenord
-    // lägg till i db
     const { password, userName, name, role, teacherId } = req.body;
     const db = admin.firestore();
     const studentRef = db.collection("students");
@@ -86,6 +81,7 @@ exports.registerStudent = async (req, res) => {
       .collection("students")
       .doc("/" + userName + "/")
       .create({
+        userName: userName,
         name: name,
         role: role,
         password: hashedPassword,
@@ -106,24 +102,23 @@ exports.registerStudent = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+  //katodo tacherId, how to fetch an connect
   console.log("Start login process");
-  // get info from frontend
-  //check if user role is teacher or student
-  // if teacher => log in with firebase (check how)
-  //if student => check hashed password from database.
-  //for student, start a session in local storage with a random id.
   const { identification, password } = req.body;
+  console.log("Identification", identification);
+
+  if (!identification || !password) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  const db = admin.firestore();
 
   try {
     //check if user is teacher of student
+    try {
+      const userRecord = await admin.auth().getUserByEmail(identification);
 
-    console.log("Identification", identification);
-
-    const userRecord = await admin.auth().getUserByEmail(identification);
-
-    if (userRecord) {
-      const email = identification;
-      try {
+      if (userRecord) {
         //login as teacher
         const apiKey = process.env.MY_SECRET_FIREBASE_API_KEY;
         console.log("API Key från Secrets:", apiKey);
@@ -132,7 +127,7 @@ exports.login = async (req, res) => {
         console.log(firebaseAuthUrl);
 
         const response = await axios.post(firebaseAuthUrl, {
-          email: email,
+          email: identification,
           password: password,
           returnSecureToken: true,
         });
@@ -142,93 +137,66 @@ exports.login = async (req, res) => {
 
         // Skicka svaret till frontend
         res.status(200).json({
-          message: "Login successful",
+          message: "Teacher login successful",
           idToken,
           refreshToken,
           expiresIn,
           userId: localId,
         });
-      } catch (error) {
-        console.error(
-          "Error logging in user:",
-          error.response?.data?.error || error.message
-        );
-        res.status(400).json({
-          message: "Login failed",
-          error: error.message,
-        });
+      }
+    } catch (error) {
+      console.log(
+        "Teacher login failed or user not found in Firebase Auth:",
+        error.message
+      );
+    }
+    //Check if student exists and login
+    const studentRef = db.collection("students");
+    const isStudent = await studentRef
+      .where("userName", "==", identification)
+      .get();
+
+    if (!isStudent.empty) {
+      const user = isStudent.docs[0].data();
+
+      // Verifiera lösenord
+      console.log("password", user);
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // return res.status(200).json({
-      //   message: "User found in Firebase Auth",
-      //   user: {
-      //     uid: userRecord.uid,
-      //     email: "test20@gmail.com",
-      //     displayName: userRecord.displayName,
-      //     photoURL: userRecord.photoURL,
-      //     providerData: userRecord.providerData,
-      //   },
-      // });
+      // Skapa ett sessionId och session
+      const sessionId = crypto.randomUUID();
+      console.log("Session ID generated:", sessionId);
+      // 1 dag framåt
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const sessionRef = db.collection("sessions").doc(sessionId);
+
+      await sessionRef.set({
+        studentId: user.userName,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        expiresAt: expiresAt,
+        role: "student",
+        ip: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      // Returnera sessionsinformation
+      return res.status(200).json({
+        message: "Login successful",
+        sessionId: sessionId,
+        user: {
+          userName: user.userName,
+          name: user.name,
+          role: user.role,
+        },
+      });
     } else {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "No users found" });
     }
-
-    // const db = admin.firestore();
-    // const userRef = db.collection("users");
-    // const isTeacher = await userRef.where("email", "==", identification).get();
-
-    // if (!isTeacher.empty) {
-    //   const user = isTeacher.docs[0].data();
-    //   return res.status(200).json({
-    //     message: "User db",
-    //     user,
-    //   });
-    // } else {
-    //   return res.status(404).json({ message: "User not found" });
-    // }
-    // if (!isTeacher.empty) {
-    //   const teacherDoc = isTeacher.docs[0];
-    //   const userData = teacherDoc.data(); // Detta är innehållet i dokumentet
-    //   const userEmail = userData.email; // Här plockar vi ut email-fältet
-
-    //   console.log(`User found: ${userEmail}`);
-
-    //   try {
-    //     //login as teacher
-    //     const apiKey = process.env.MY_SECRET_FIREBASE_API_KEY;
-    //     console.log("API Key från Secrets:", apiKey);
-
-    //     const firebaseAuthUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
-    //     console.log(firebaseAuthUrl);
-
-    //     const response = await axios.post(firebaseAuthUrl, {
-    //       email: userEmail,
-    //       password: password,
-    //       returnSecureToken: true,
-    //     });
-
-    //     // Hämta data från Firebase-svaret
-    //     const { idToken, refreshToken, expiresIn, localId } = response.data;
-
-    //     // Skicka svaret till frontend
-    //     res.status(200).json({
-    //       message: "Login successful",
-    //       idToken,
-    //       refreshToken,
-    //       expiresIn,
-    //       userId: localId,
-    //     });
-    //   } catch (error) {
-    //     console.error(
-    //       "Error logging in user:",
-    //       error.response?.data?.error || error.message
-    //     );
-    //     res.status(400).json({
-    //       message: "Login failed",
-    //       error: error.message,
-    //     });
-    //   }
-    // }
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
