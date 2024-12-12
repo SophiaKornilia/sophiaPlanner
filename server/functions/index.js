@@ -19,12 +19,12 @@ console.log("CORS settings applied");
 app.use("/api", userRoutes);
 
 // Kontrollera om servern körs lokalt eller i Firebase Functions
-if (!process.env.FUNCTIONS_EMULATOR && process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server is running locally on port ${PORT}`);
-  });
-}
+// if (!process.env.FUNCTIONS_EMULATOR && process.env.NODE_ENV !== "production") {
+//   const PORT = process.env.PORT || 3000;
+//   app.listen(PORT, () => {
+//     console.log(`Server is running locally on port ${PORT}`);
+//   });
+// }
 
 //undefined och används inte ??
 // const apiKey = process.env.MY_FIREBASE_API_KEY_ENV; // Hämta nyckeln från miljövariabeln
