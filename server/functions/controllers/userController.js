@@ -202,3 +202,28 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+exports.logout = async (req, res) => {
+  //checka vilken roll
+  //if teacher så logga ut med firebase 
+  //idToken och uid/userId fås vid inloggning
+  const {idToken, userId} = req.body; 
+  
+  try{
+   await admin.auth().revokeRefreshTokens(userId);
+
+   const userMetaData = await admin.auth().getUser(userId);
+
+   const tokensRevokedAt = new Date(userMetaData.tokensValidAfterTime).getTime() / 1000;
+
+   
+   console.log(`Tokens revoked at: ${tokensRevokedAt}`);
+   return res.status(200).json({
+      message: "Teacher successfully loged out"
+    });
+  } catch(error){
+    console.error("Logout error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+  //om student så logga ut med att döda session och ta bort från databasen. 
+}
