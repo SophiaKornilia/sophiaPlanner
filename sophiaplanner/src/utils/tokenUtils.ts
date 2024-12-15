@@ -1,6 +1,7 @@
 import API_BASE_URL from "../../config/vercel-config";
 
-export function scheduleTokenRefresh(expiresIn: number) {
+// export function scheduleTokenRefresh(expiresIn: number) {
+export function scheduleTokenRefresh() {
   //   const refreshTime = (expiresIn - 300) * 1000; // 5 minuter innan token går ut
   const refreshTime = 10 * 1000;
   console.log(

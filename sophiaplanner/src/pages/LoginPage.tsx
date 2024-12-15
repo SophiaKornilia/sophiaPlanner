@@ -1,5 +1,5 @@
 import { Header } from "../components/Header";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import "../styles/index.css";
 import API_BASE_URL from "../../config/vercel-config";
 import { scheduleTokenRefresh } from "../utils/tokenUtils";
@@ -40,15 +40,15 @@ const Login = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(loginForm), 
+        body: JSON.stringify(loginForm),
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log("User logedin successfully", data);
 
-        const expiresIn = data.expiresIn;
-        scheduleTokenRefresh(expiresIn);
+        // const expiresIn = data.expiresIn;
+        scheduleTokenRefresh();
 
         // //spara användare och token i context
         // setUser(data.user);
