@@ -150,19 +150,24 @@ exports.login = async (req, res) => {
         error.message
       );
     }
+
+    console.log("The  code is here! ");
+
     //Check if student exists and login
     const studentRef = db.collection("students");
     const isStudent = await studentRef
       .where("userName", "==", identification)
       .get();
 
+    console.log("isStudent", isStudent);
+
     if (!isStudent.empty) {
-      const user = isStudent.docs[0].data();
+      const student = isStudent.docs[0].data();
+      console.log("student first", student);
 
-      // Verifiera lösenord
-      console.log("password", user);
+      const isPasswordValid = await bcrypt.compare(password, student.password);
 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      console.log("password", isPasswordValid);
 
       if (!isPasswordValid) {
         return res.status(401).json({ message: "Invalid credentials" });
@@ -176,7 +181,7 @@ exports.login = async (req, res) => {
       const sessionRef = db.collection("sessions").doc(sessionId);
 
       await sessionRef.set({
-        studentId: user.userName,
+        studentId: student.userName,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         expiresAt: expiresAt,
         role: "student",
@@ -189,9 +194,9 @@ exports.login = async (req, res) => {
         message: "Login successful",
         sessionId: sessionId,
         user: {
-          userName: user.userName,
-          name: user.name,
-          role: user.role,
+          userName: student.userName,
+          name: student.name,
+          role: student.role,
         },
       });
     } else {
@@ -205,25 +210,80 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   //checka vilken roll
-  //if teacher så logga ut med firebase 
+  //if teacher så logga ut med firebase
   //idToken och uid/userId fås vid inloggning
-  const {idToken, userId} = req.body; 
-  
-  try{
-   await admin.auth().revokeRefreshTokens(userId);
+  const { identification, userId, sessionId } = req.body;
 
-   const userMetaData = await admin.auth().getUser(userId);
+  // if (!userId || !sessionId || !identification) {
+  //   return res.status(400).json({ message: "Missing required fields" });
+  // }
+  const db = admin.firestore();
 
-   const tokensRevokedAt = new Date(userMetaData.tokensValidAfterTime).getTime() / 1000;
+  try {
+    console.log("first try");
 
-   
-   console.log(`Tokens revoked at: ${tokensRevokedAt}`);
-   return res.status(200).json({
-      message: "Teacher successfully loged out"
-    });
-  } catch(error){
+    try {
+      console.log("second try");
+      const userRecord = await admin.auth().getUserByEmail(identification);
+
+      if (userRecord) {
+        await admin.auth().revokeRefreshTokens(userId);
+
+        const userMetaData = await admin.auth().getUser(userId);
+
+        const tokensRevokedAt =
+          new Date(userMetaData.tokensValidAfterTime).getTime() / 1000;
+
+        console.log(`Tokens revoked at: ${tokensRevokedAt}`);
+        return res.status(200).json({
+          message: "Teacher successfully loged out",
+        });
+      }
+    } catch (error) {
+      console.log(
+        "Teacher login failed or user not found in Firebase Auth:",
+        error.message
+      );
+    }
+
+    //logout Student
+
+    //det ska skickas med från body
+    console.log("userName", identification, "sessionid", sessionId);
+
+    const sessionRef = db.collection("sessions").doc(sessionId);
+    const sessionDoc = await sessionRef.get();
+
+    if (!sessionDoc.exists) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    //kolla om sessionsId är giltigt och aktiv
+    const sessionData = sessionDoc.data();
+    console.log("Session data:", sessionData);
+
+    if (new Date(sessionData.expiresAt.toDate()) < new Date()) {
+      return res.status(401).json({ message: "Session expired" });
+    }
+
+    //kolla att det är samma student som är inloggad som raderar den
+
+    // Skickas från klienten
+    if (sessionData.studentId !== identification) {
+      return res.status(403).json({ message: "Unauthorized request" });
+    }
+
+    //radera session
+    await sessionRef.delete();
+    console.log("Session deleted:", sessionId);
+
+    //gör ett cron job som raderar utgångna sessioner baserat på expiresAt katodo - i egen funktion
+
+    return res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
     console.error("Logout error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
-  //om student så logga ut med att döda session och ta bort från databasen. 
-}
+
+  //om student så logga ut med att döda session och ta bort från databasen.
+};
