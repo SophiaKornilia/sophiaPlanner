@@ -1,27 +1,29 @@
 import { Header } from "../components/Header";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import "../styles/index.css";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import API_BASE_URL from "../../config/vercel-config";
+import { scheduleTokenRefresh } from "../utils/tokenUtils";
+// import { useNavigate } from "react-router-dom";
+// import { AuthContext } from "../context/AuthContext";
 
 interface loginData {
-  email: string;
+  identification: string;
   password: string;
 }
 
 const Login = () => {
   const [loginForm, setLoginForm] = useState<loginData>({
-    email: "",
+    identification: "",
     password: "",
   });
-  const { setUser, setToken } = useContext(AuthContext);
-  const navigate = useNavigate();
+  // const { setUser, setToken } = useContext(AuthContext);
+  // const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!loginForm.email) {
-      alert("Email fältet är tomt!");
+    if (!loginForm.identification) {
+      alert("Fyll i användarnamn!");
       return;
     }
     if (!loginForm.password) {
@@ -30,11 +32,14 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/login", {
+      // const response = await fetch(
+      // "https://us-central1-sophiaplanner-123.cloudfunctions.net/server/api/login",
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(loginForm),
       });
 
@@ -42,22 +47,25 @@ const Login = () => {
         const data = await response.json();
         console.log("User logedin successfully", data);
 
-        //spara användare och token i context
-        setUser(data.user);
-        console.log("User set in context:", data.user);
-        setToken(data.accessToken);
-        console.log("Token set in context:", data.accessToken);
+        // const expiresIn = data.expiresIn;
+        scheduleTokenRefresh();
 
-        // Navigera till rätt dashboard
-        if (data.user.role === "teacher") {
-          navigate("/DashboardTeacher");
-        } else if (data.user.role === "student") {
-          navigate("/DashboardStudent");
-        } else {
-          console.log("Ingen roll satt/hittades!");
+        // //spara användare och token i context
+        // setUser(data.user);
+        // console.log("User set in context:", data.user);
+        // setToken(data.accessToken);
+        // console.log("Token set in context:", data.accessToken);
 
-          navigate("/");
-        }
+        // // Navigera till rätt dashboard
+        // if (data.user.role === "teacher") {
+        //   navigate("/DashboardTeacher");
+        // } else if (data.user.role === "student") {
+        //   navigate("/DashboardStudent");
+        // } else {
+        //   console.log("Ingen roll satt/hittades!");
+
+        //   navigate("/");
+        // }
       } else if (response.status === 401) {
         alert("Felaktiga inloggningsuppgifter!");
       } else if (response.status === 500) {
@@ -86,9 +94,9 @@ const Login = () => {
             className="mb-4 p-2 w-full max-w-xs border rounded-md"
             type="text"
             id="email"
-            value={loginForm.email}
+            value={loginForm.identification}
             onChange={(e) => {
-              setLoginForm({ ...loginForm, email: e.target.value });
+              setLoginForm({ ...loginForm, identification: e.target.value });
             }}
             required
           ></input>
@@ -106,7 +114,7 @@ const Login = () => {
           <button
             className="custom-button hover:bg-opacity-80"
             onClick={handleLogin}
-          > 
+          >
             Logga in
           </button>
         </form>

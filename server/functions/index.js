@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const userRoutes = require("./routes/userRoutes");
 
@@ -10,7 +11,15 @@ admin.initializeApp({
 });
 
 const app = express();
-app.use(cors());
+
+app.use(cookieParser());
+//katodo - byt till domännamn för frontend när det är klart och är deployat
+app.use(
+  cors({
+    origin: "https://sophiaplanner-q08z5ow36-kornilias-projects.vercel.app/",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.set("view engine", null);
 
