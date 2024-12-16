@@ -106,7 +106,6 @@ exports.login = async (req, res) => {
   //katodo tacherId, how to fetch an connect
   console.log("Start login process");
   const { identification, password } = req.body;
-  const isProduction = true; //sätt till true när jag deployar katodo
   console.log("Identification", identification);
 
   if (!identification || !password) {
@@ -140,14 +139,14 @@ exports.login = async (req, res) => {
         //katodo: secure: "true" och sameSite: "None" för live
         res.cookie("idToken", idToken, {
           httpOnly: true,
-          secure: isProduction,
+          secure: true,
           sameSite: "None",
           maxAge: parseInt(expiresIn) * 1000,
         });
 
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
-          secure: isProduction,
+          secure: true,
           sameSite: "None",
           maxAge: 30 * 24 * 60 * 60 * 1000, //30 dagar
         });
@@ -357,7 +356,7 @@ exports.refreshToken = async (req, res) => {
     res.cookie("idToken", newIdToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "None",
       maxAge: parseInt(expiresIn) * 1000,
     });
 
