@@ -22,9 +22,9 @@ export async function refreshIdToken() {
     });
 
     if (response.ok) {
-      console.log("Token uppdaterades framgångsrikt.");
+      console.log("Token uppdaterades framgångsrikt.", response);
       const data = await response.json();
-      console.log(data.message);
+      console.log("data message", data);
     } else {
       console.error("Misslyckades med att uppdatera token.");
     }

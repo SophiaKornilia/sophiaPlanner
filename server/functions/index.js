@@ -11,13 +11,24 @@ admin.initializeApp({
 });
 
 const app = express();
+const allowedUrl = [
+  "https://sophiaplanner-q08z5ow36-kornilias-projects.vercel.app/",
+  "http://localhost:5173",
+];
 
 app.use(cookieParser());
 //katodo - byt till domännamn för frontend när det är klart och är deployat
 app.use(
   cors({
-    origin: "https://sophiaplanner-q08z5ow36-kornilias-projects.vercel.app/",
-    credentials: true,
+    origin: (origin, callback) => {
+      // Kontrollera om origin finns i listan med tillåtna URL:er
+      if (!origin || allowedUrl.includes(origin)) {
+        callback(null, true); // Tillåt förfrågan
+      } else {
+        callback(new Error("Not allowed by CORS")); // Blockera
+      }
+    },
+    credentials: true, // Tillåt cookies och autentisering
   })
 );
 app.use(express.json());
