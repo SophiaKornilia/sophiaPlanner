@@ -106,6 +106,7 @@ exports.login = async (req, res) => {
   //katodo tacherId, how to fetch an connect
   console.log("Start login process");
   const { identification, password } = req.body;
+  const isProduction = true; //sätt till true när jag deployar katodo
   console.log("Identification", identification);
 
   if (!identification || !password) {
@@ -125,7 +126,7 @@ exports.login = async (req, res) => {
         console.log("API Key från Secrets:", apiKey);
 
         const firebaseAuthUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
-        console.log(firebaseAuthUrl);
+        console.log("firebaseAuthUrl", firebaseAuthUrl);
 
         const response = await axios.post(firebaseAuthUrl, {
           email: identification,
@@ -135,23 +136,24 @@ exports.login = async (req, res) => {
 
         // Hämta data från Firebase-svaret
         const { idToken, refreshToken, expiresIn, localId } = response.data;
+        console.log("tokens osv", idToken, refreshToken);
         //katodo: secure: "true" och sameSite: "None" för live
         res.cookie("idToken", idToken, {
           httpOnly: true,
-          secure: true,
+          secure: isProduction,
           sameSite: "None",
           maxAge: parseInt(expiresIn) * 1000,
         });
 
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
-          secure: true,
+          secure: isProduction,
           sameSite: "None",
           maxAge: 30 * 24 * 60 * 60 * 1000, //30 dagar
         });
 
         // Skicka svaret till frontend
-        res.status(200).json({
+        return res.status(200).json({
           message: "Teacher login successful",
           user: {
             uderId: userRecord.uid,
