@@ -133,23 +133,25 @@ exports.login = async (req, res) => {
           returnSecureToken: true,
         });
 
-        // Hämta data från Firebase-svaret
-        const { idToken, refreshToken, expiresIn, localId } = response.data;
-        console.log("tokens osv", idToken, refreshToken);
-        //katodo: secure: "true" och sameSite: "None" för live
-        res.cookie("idToken", idToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "None",
-          maxAge: parseInt(expiresIn) * 1000,
-        });
+        console.log("Firebase respons data", response.data);
 
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "None",
-          maxAge: 30 * 24 * 60 * 60 * 1000, //30 dagar
-        });
+        // Hämta data från Firebase-svaret
+        // const { idToken, refreshToken, expiresIn, localId } = response.data;
+        // console.log("tokens osv", idToken, refreshToken);
+        // //katodo: secure: "true" och sameSite: "None" för live
+        // res.cookie("idToken", idToken, {
+        //   httpOnly: true,
+        //   secure: true,
+        //   sameSite: "None",
+        //   maxAge: parseInt(expiresIn) * 1000,
+        // });
+
+        // res.cookie("refreshToken", refreshToken, {
+        //   httpOnly: true,
+        //   secure: true,
+        //   sameSite: "None",
+        //   maxAge: 30 * 24 * 60 * 60 * 1000, //30 dagar
+        // });
 
         // Skicka svaret till frontend
         return res.status(200).json({
