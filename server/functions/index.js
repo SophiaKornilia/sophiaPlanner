@@ -12,7 +12,7 @@ admin.initializeApp({
 
 const app = express();
 const allowedUrl = [
-  "https://sophiaplanner-q08z5ow36-kornilias-projects.vercel.app",
+  "https://sophiaplanner-q08z5ow36-kornilias-projects.vercel.app/server",
   "http://localhost:5173",
 ];
 
