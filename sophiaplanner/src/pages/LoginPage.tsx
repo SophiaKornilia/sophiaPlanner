@@ -32,8 +32,7 @@ const Login = () => {
     }
 
     try {
-      // const response = await fetch(
-      // "https://us-central1-sophiaplanner-123.cloudfunctions.net/server/api/login",
+      console.log("api base url", API_BASE_URL);
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         credentials: "include",
