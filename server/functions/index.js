@@ -11,13 +11,22 @@ admin.initializeApp({
 });
 
 const app = express();
-
+const allowedUrl = [
+  "https://sophiaplanner.vercel.app", // Din live Vercel-URL
+  "http://localhost:5173", // För lokal utveckling
+];
 app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://sophiaplanner-q08z5ow36-kornilias-projects.vercel.app",
-    credentials: true, // Tillåt cookies och autentisering
+    origin: (origin, callback) => {
+      if (!origin || allowedUrl.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Viktigt för cookies
   })
 );
 app.use(express.json());
