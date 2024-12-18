@@ -31,7 +31,6 @@ const CreateStudentAccount = () => {
     password: "",
     role: "student",
     teacherId: user?.id || "",
-    // teacherID: user?.uid || "",
   });
 
   useEffect(() => {
