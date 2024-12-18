@@ -118,6 +118,8 @@ exports.login = async (req, res) => {
     //check if user is teacher of student
     try {
       const userRecord = await admin.auth().getUserByEmail(identification);
+      let teacherName = null;
+      let teacherRole = null;
 
       if (userRecord) {
         //login as teacher
@@ -136,40 +138,37 @@ exports.login = async (req, res) => {
         console.log("Firebase respons data", response.data);
 
         // Hämta data från Firebase-svaret
-        // const { idToken, refreshToken, expiresIn, localId } = response.data;
-        // console.log("tokens osv", idToken, refreshToken);
-        // //katodo: secure: "true" och sameSite: "None" för live
-        // res.cookie("idToken", idToken, {
-        //   httpOnly: true,
-        //   secure: true,
-        //   sameSite: "None",
-        //   maxAge: parseInt(expiresIn) * 1000,
-        // });
+        const { idToken, refreshToken, expiresIn } = response.data;
 
-        // res.cookie("refreshToken", refreshToken, {
-        //   httpOnly: true,
-        //   secure: true,
-        //   sameSite: "None",
-        //   maxAge: 30 * 24 * 60 * 60 * 1000, //30 dagar
-        // });
+        //Skicka tokens tillbaka till frontend som JSON
+
+        console.log("tokens osv", idToken, "refresh", refreshToken);
+
+        //get userinfo from teacher
+        const teacherRef = db.collection("users").doc(userRecord.uid);
+        const teacherDoc = await teacherRef.get();
+
+        if (teacherDoc.exists) {
+          const teacher = teacherDoc.data();
+          teacherName = teacher.name;
+          teacherRole = teacher.role;
+
+          console.log("teacherDoc", teacherName, teacherRole);
+        }
 
         // Skicka svaret till frontend
         return res.status(200).json({
           message: "Teacher login successful",
           user: {
-            uderId: userRecord.uid,
+            userId: userRecord.uid,
             email: userRecord.email,
-            role: "teacher",
           },
+          teacherName,
+          teacherRole,
+          idToken,
+          refreshToken,
           expiresIn: parseInt(expiresIn),
         });
-        // res.status(200).json({
-        //   message: "Teacher login successful",
-        //   idToken,
-        //   refreshToken,
-        //   expiresIn,
-        //   userId: localId,
-        // });
       }
     } catch (error) {
       console.log(
@@ -216,13 +215,6 @@ exports.login = async (req, res) => {
         userAgent: req.headers["user-agent"],
       });
 
-      res.cookie("sessionId", sessionId, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000, // 1 dag
-      });
-
       // Returnera sessionsinformation
       return res.status(200).json({
         message: "Student login successful",
@@ -231,17 +223,9 @@ exports.login = async (req, res) => {
           name: student.name,
           role: student.role,
         },
+        sessionId,
         expiresIn: 24 * 60 * 60, // 1 dag i sekunder
       });
-      // return res.status(200).json({
-      //   message: "Login successful",
-      //   sessionId: sessionId,
-      //   user: {
-      //     userName: student.userName,
-      //     name: student.name,
-      //     role: student.role,
-      //   },
-      // });
     } else {
       return res.status(404).json({ message: "No users found" });
     }
@@ -333,18 +317,17 @@ exports.logout = async (req, res) => {
 
 exports.refreshToken = async (req, res) => {
   //hämta cookies från frontend
-  const refreshToken = req.cookies?.refreshToken;
+  const { refreshToken } = req.body;
 
   //kollar om token inte finns
   if (!refreshToken) {
     return res.status(401).json({
-      message: "Refresh token missing",
+      message: "RefreshToken missing",
     });
   }
 
-  const apiKey = process.env.MY_SECRET_FIREBASE_API_KEY;
-
   try {
+    const apiKey = process.env.MY_SECRET_FIREBASE_API_KEY;
     const response = await axios.post(
       `https://securetoken.googleapis.com/v1/token?key=${apiKey}`,
       {
@@ -352,17 +335,15 @@ exports.refreshToken = async (req, res) => {
         refresh_token: refreshToken,
       }
     );
+    console.log("Firebase refresh token response:", response.data);
 
-    const { id_token: newIdToken, expires_in: expiresIn } = response.data;
+    const { id_token, refresh_token, expires_in } = response.data;
 
-    res.cookie("idToken", newIdToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: parseInt(expiresIn) * 1000,
+    res.status(200).json({
+      idToken: id_token,
+      refreshToken: refresh_token,
+      expiresIn: expires_in,
     });
-
-    res.status(200).json({ message: "Token refreshed successfully" });
   } catch (error) {
     console.error("Token refresh error:", error.message);
     return res.status(500).json({ message: "Could not refresh token" });
