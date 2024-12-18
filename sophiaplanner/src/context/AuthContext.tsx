@@ -21,19 +21,18 @@ interface AuthProviderProps {
 interface user {
   name: string;
   role: string;
-  id: string; 
+  id: string;
+  identification: string;
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<user | null>(null);
+  const sessionId = localStorage.getItem("sessionId");
+  const userId = user?.id; // Hämtar id från user-state
+  const identification = user?.identification;
   // const navigate = useNavigate();
 
   const logout = async () => {
-    const role = localStorage.getItem("role"); // Läser roll från localStorage
-    const sessionId = localStorage.getItem("sessionId"); // Student sessionId
-    const userId = localStorage.getItem("userId"); // Lärare userId
-    const identification = localStorage.getItem("identification"); // E-post eller användarnamn
-
     try {
       // Anropa serverns logout-endpoint
       const response = await fetch(`${API_BASE_URL}/logout`, {
@@ -42,7 +41,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          role,
           sessionId,
           userId,
           identification,
@@ -59,14 +57,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
     //rensa localStorage
     localStorage.clear();
-    // Rensa localStorage för båda rollerna
-    // localStorage.removeItem("role");
-    // localStorage.removeItem("sessionId");
-    // localStorage.removeItem("idToken");
-    // localStorage.removeItem("refreshToken");
-    // localStorage.removeItem("tokenExpiry");
-    // localStorage.removeItem("userId");
-    // localStorage.removeItem("identification");
+    setUser(null);
 
     console.log("LocalStorage cleared. Logging out...");
 

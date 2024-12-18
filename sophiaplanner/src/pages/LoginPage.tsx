@@ -57,6 +57,7 @@ const Login = () => {
               name: data.teacherName,
               role: data.teacherRole,
               id: data.user.userId,
+              identification: data.identifier,
             });
             localStorage.setItem("idToken", data.idToken);
             localStorage.setItem("refreshToken", data.refreshToken);
@@ -79,6 +80,7 @@ const Login = () => {
               name: data.user.name,
               role: data.user.role,
               id: data.user.userName,
+              identification: data.user.userName,
             });
             localStorage.setItem("sessionId", data.sessionId);
             localStorage.setItem(
