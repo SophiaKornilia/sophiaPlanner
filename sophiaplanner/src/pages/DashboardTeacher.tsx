@@ -8,7 +8,7 @@ interface Student {
 }
 
 interface Group {
-  groupName: string;
+  groupName: string; 
 }
 const DashboardTeacher = () => {
   const { user } = useContext(AuthContext);
@@ -24,7 +24,7 @@ const DashboardTeacher = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ teacherId: user?.uid }),
+          body: JSON.stringify({ teacherId: user?.id }),
         }
       );
 
@@ -38,7 +38,7 @@ const DashboardTeacher = () => {
     } catch (error) {
       console.error("Hittade inga elever", error);
     }
-  }, [user?.uid]);
+  }, [user?.id]);
 
   const getGroups = useCallback(async () => {
     try {
@@ -49,7 +49,7 @@ const DashboardTeacher = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ teacherId: user?.uid }),
+          body: JSON.stringify({ teacherId: user?.id }),
         }
       );
 
@@ -63,11 +63,11 @@ const DashboardTeacher = () => {
     } catch (error) {
       console.error("Hittade inga grupper", error);
     }
-  }, [user?.uid]);
+  }, [user?.id]);
 
   useEffect(() => {
-    if (user?.uid) {
-      console.log("Fetching students for user: ", user?.uid);
+    if (user?.id) {
+      console.log("Fetching students for user: ", user?.id);
       getStudents();
       getGroups();
     }
