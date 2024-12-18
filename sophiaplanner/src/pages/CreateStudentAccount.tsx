@@ -18,7 +18,7 @@ interface Group {
 }
 const CreateStudentAccount = () => {
   const { user } = useContext(AuthContext);
-  console.log("user", user?.uid);
+
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
   const [groups, setGroups] = useState<Group[]>([]);
@@ -29,7 +29,8 @@ const CreateStudentAccount = () => {
     userName: "",
     password: "",
     role: "student",
-    teacherID: user?.uid || "",
+    teacherID: "",
+    // teacherID: user?.uid || "",
   });
 
   const checkGroups = useCallback(async () => {
@@ -41,7 +42,7 @@ const CreateStudentAccount = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ teacherId: user?.uid }),
+          // body: JSON.stringify({ teacherId: user?.uid }),
         }
       );
 
@@ -55,7 +56,7 @@ const CreateStudentAccount = () => {
     } catch (error) {
       console.error("Hittade inga grupper", error);
     }
-  }, [user?.uid]);
+  }, [user?.id]);
 
   const handleClick = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,7 +112,7 @@ const CreateStudentAccount = () => {
   };
 
   useEffect(() => {
-    if (user?.uid) {
+    if (user?.id) {
       checkGroups();
     }
   }, [user, checkGroups]);
