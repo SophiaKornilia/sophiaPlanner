@@ -1,7 +1,8 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Header } from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import API_BASE_URL from "../../config/vercel-config";
 // import { useNavigate } from "react-router-dom";
 
 interface student {
@@ -9,19 +10,19 @@ interface student {
   userName: string;
   password: string;
   role: string;
-  teacherID: string;
+  teacherId: string;
   group?: string;
 }
 
-interface Group {
-  groupName: string;
-}
+// interface Group {
+//   groupName: string;
+// }
 const CreateStudentAccount = () => {
   const { user } = useContext(AuthContext);
 
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
-  const [groups, setGroups] = useState<Group[]>([]);
+  // const [groups, setGroups] = useState<Group[]>([]);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<student>({
@@ -29,34 +30,40 @@ const CreateStudentAccount = () => {
     userName: "",
     password: "",
     role: "student",
-    teacherID: "",
+    teacherId: user?.id || "",
     // teacherID: user?.uid || "",
   });
 
-  const checkGroups = useCallback(async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:3000/api/users/getGroups",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // body: JSON.stringify({ teacherId: user?.uid }),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setGroups(data.groups);
-        console.log("Groups found successfully!", data);
-      } else {
-        console.error("Failed to fetch groups");
-      }
-    } catch (error) {
-      console.error("Hittade inga grupper", error);
+  useEffect(() => {
+    if (user?.id) {
+      setFormData((prev) => ({ ...prev, teacherID: user.id }));
     }
   }, [user?.id]);
+
+  // const checkGroups = useCallback(async () => {
+  //   try {
+  //     const response = await fetch(
+  //       "http://localhost:3000/api/users/getGroups",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         // body: JSON.stringify({ teacherId: user?.uid }),
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setGroups(data.groups);
+  //       console.log("Groups found successfully!", data);
+  //     } else {
+  //       console.error("Failed to fetch groups");
+  //     }
+  //   } catch (error) {
+  //     console.error("Hittade inga grupper", error);
+  //   }
+  // }, [user?.id]);
 
   const handleClick = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,16 +90,13 @@ const CreateStudentAccount = () => {
     const updatedFormData = { ...formData, password: password };
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/users/registerStudent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedFormData),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/registerStudent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedFormData),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -111,11 +115,11 @@ const CreateStudentAccount = () => {
     }
   };
 
-  useEffect(() => {
-    if (user?.id) {
-      checkGroups();
-    }
-  }, [user, checkGroups]);
+  // useEffect(() => {
+  //   if (user?.id) {
+  //     checkGroups();
+  //   }
+  // }, [user, checkGroups]);
 
   return (
     <div className="">
@@ -176,7 +180,7 @@ const CreateStudentAccount = () => {
             />
           </div>
 
-          {groups.length > 0 ? (
+          {/* {groups.length > 0 ? (
             <div className="mb-4 w-full max-w-xs">
               <label className="mb-2 text-lg font-semibold">Grupp:</label>
               <select
@@ -191,7 +195,7 @@ const CreateStudentAccount = () => {
                 ))}
               </select>
             </div>
-          ) : null}
+          ) : null} */}
 
           <button
             type="button"
