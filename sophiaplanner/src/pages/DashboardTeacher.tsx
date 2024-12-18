@@ -8,7 +8,7 @@ interface Student {
 }
 
 interface Group {
-  groupName: string;
+  groupName: string; 
 }
 const DashboardTeacher = () => {
   const { user } = useContext(AuthContext);
