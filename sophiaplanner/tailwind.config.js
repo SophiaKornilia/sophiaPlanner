@@ -23,7 +23,7 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };
 
 //primary: En grundfärg som ofta används på knappar och framhävda element.
