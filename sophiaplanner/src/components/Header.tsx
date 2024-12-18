@@ -4,13 +4,13 @@ import { useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 export const Header = () => {
-  const { user, token, logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
   // const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("user", user, "token", token);
+    console.log("user", user);
     return;
-  }, [user, token]);
+  }, [user]);
 
   const handleLogoutClick = async () => {
     await logout();
