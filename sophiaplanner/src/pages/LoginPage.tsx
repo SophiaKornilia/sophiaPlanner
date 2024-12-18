@@ -1,10 +1,12 @@
 import { Header } from "../components/Header";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "../styles/index.css";
 import API_BASE_URL from "../../config/vercel-config";
-import { scheduleTokenRefresh } from "../utils/tokenUtils";
-// import { useNavigate } from "react-router-dom";
+// import { scheduleTokenRefresh } from "../utils/tokenUtils";
+import { useNavigate } from "react-router-dom";
 // import { AuthContext } from "../context/AuthContext";
+import { useTokenService } from "../utils/tokenUtils";
+import { AuthContext } from "../context/AuthContext";
 
 interface loginData {
   identification: string;
@@ -17,7 +19,9 @@ const Login = () => {
     password: "",
   });
   // const { setUser, setToken } = useContext(AuthContext);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { scheduleTokenRefresh } = useTokenService();
+  const { user, setUser } = useContext(AuthContext);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,25 +50,49 @@ const Login = () => {
         const data = await response.json();
         console.log("User logedin successfully", data);
 
-        // const expiresIn = data.expiresIn;
-        scheduleTokenRefresh();
+        // Navigera till rätt dashboard
+        if (data.teacherRole === "teacher") {
+          if (data.idToken) {
+            setUser({
+              name: data.teacherName,
+              role: data.teacherRole,
+              id: data.user.userId,
+            });
+            localStorage.setItem("idToken", data.idToken);
+            localStorage.setItem("refreshToken", data.refreshToken);
+            localStorage.setItem(
+              "tokenExpiry",
+              String(Date.now() + data.expiresIn * 1000)
+            );
 
-        // //spara användare och token i context
-        // setUser(data.user);
-        // console.log("User set in context:", data.user);
-        // setToken(data.accessToken);
-        // console.log("Token set in context:", data.accessToken);
+            scheduleTokenRefresh();
+            // setToken(data.accessToken);
+            console.log("Token set in context:", data.accessToken);
 
-        // // Navigera till rätt dashboard
-        // if (data.user.role === "teacher") {
-        //   navigate("/DashboardTeacher");
-        // } else if (data.user.role === "student") {
-        //   navigate("/DashboardStudent");
-        // } else {
-        //   console.log("Ingen roll satt/hittades!");
+            console.log("Tokens sparade i LocalStorage.");
+          }
+          navigate("/DashboardTeacher");
+          console.log("userlog", user);
+        } else if (data.user.role === "student") {
+          if (data.sessionId) {
+            setUser({
+              name: data.user.name,
+              role: data.user.role,
+              id: data.user.userName,
+            });
+            localStorage.setItem("sessionId", data.sessionId);
+            localStorage.setItem(
+              "tokenExpiry",
+              String(Date.now() + data.expiresIn * 1000)
+            );
+            console.log("Tokens sparade i LocalStorage.");
+          }
+          navigate("/DashboardStudent");
+        } else {
+          console.log("Ingen roll satt/hittades!");
 
-        //   navigate("/");
-        // }
+          navigate("/");
+        }
       } else if (response.status === 401) {
         alert("Felaktiga inloggningsuppgifter!");
       } else if (response.status === 500) {
