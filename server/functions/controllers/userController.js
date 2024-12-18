@@ -120,6 +120,7 @@ exports.login = async (req, res) => {
       const userRecord = await admin.auth().getUserByEmail(identification);
       let teacherName = null;
       let teacherRole = null;
+      let identifier = null;
 
       if (userRecord) {
         //login as teacher
@@ -152,6 +153,7 @@ exports.login = async (req, res) => {
           const teacher = teacherDoc.data();
           teacherName = teacher.name;
           teacherRole = teacher.role;
+          identifier = teacher.identification;
 
           console.log("teacherDoc", teacherName, teacherRole);
         }
@@ -222,6 +224,7 @@ exports.login = async (req, res) => {
           userName: student.userName,
           name: student.name,
           role: student.role,
+          identifier: student.userName,
         },
         sessionId,
         expiresIn: 24 * 60 * 60, // 1 dag i sekunder
@@ -247,8 +250,6 @@ exports.logout = async (req, res) => {
   const db = admin.firestore();
 
   try {
-    console.log("first try");
-
     try {
       console.log("second try");
       const userRecord = await admin.auth().getUserByEmail(identification);

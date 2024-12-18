@@ -47,7 +47,7 @@ export const Header = () => {
         </div>
       </header>
 
-      {user ? (
+      {user?.role === "teacher" ? (
         <div className="flex items-center justify-end px-8 bg-primary h-14">
           <nav>
             <ul className="flex space-x-8">

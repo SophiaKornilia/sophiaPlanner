@@ -27,7 +27,7 @@ const HandleAccount = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ groupName: groupName, teacherId: user?.uid }),
+          body: JSON.stringify({ groupName: groupName, teacherId: user?.id }),
         }
       );
 
