@@ -120,7 +120,6 @@ exports.login = async (req, res) => {
       const userRecord = await admin.auth().getUserByEmail(identification);
       let teacherName = null;
       let teacherRole = null;
-      let identifier = null;
 
       if (userRecord) {
         //login as teacher
@@ -153,7 +152,7 @@ exports.login = async (req, res) => {
           const teacher = teacherDoc.data();
           teacherName = teacher.name;
           teacherRole = teacher.role;
-          identifier = teacher.identification;
+          // identifier = userRecord.email;
 
           console.log("teacherDoc", teacherName, teacherRole);
         }

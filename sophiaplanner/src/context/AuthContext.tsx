@@ -33,6 +33,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // const navigate = useNavigate();
 
   const logout = async () => {
+    if (!identification) {
+      console.error("Identification saknas. Kan inte logga ut.");
+      return;
+    }
     try {
       // Anropa serverns logout-endpoint
       const response = await fetch(`${API_BASE_URL}/logout`, {

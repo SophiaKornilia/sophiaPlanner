@@ -57,7 +57,7 @@ const Login = () => {
               name: data.teacherName,
               role: data.teacherRole,
               id: data.user.userId,
-              identification: data.identifier,
+              identification: data.user.email,
             });
             localStorage.setItem("idToken", data.idToken);
             localStorage.setItem("refreshToken", data.refreshToken);
