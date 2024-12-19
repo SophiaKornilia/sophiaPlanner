@@ -12,7 +12,7 @@ interface student {
   group?: string;
 }
 
-export const CreateStudent = () => {
+export const RegisterStudent = () => {
   const { user } = useContext(AuthContext);
 
   const [password, setPassword] = useState<string>("");

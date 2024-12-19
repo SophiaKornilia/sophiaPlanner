@@ -1,7 +1,8 @@
 // import { useNavigate } from "react-router-dom";
 
-import { CreateStudent } from "../components/createStudent";
+
 import { Header } from "../components/Header";
+import { RegisterStudent } from "../components/RegisterStudent";
 
 // interface Group {
 //   groupName: string;
@@ -43,8 +44,7 @@ const CreateStudentAccount = () => {
   return (
     <div className="">
       <Header />
-      <CreateStudent />
-
+      <RegisterStudent/> 
       {/* {groups.length > 0 ? (
             <div className="mb-4 w-full max-w-xs">
               <label className="mb-2 text-lg font-semibold">Grupp:</label>
