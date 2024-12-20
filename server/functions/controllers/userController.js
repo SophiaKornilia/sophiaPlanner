@@ -550,7 +550,7 @@ exports.verifyStudent = async (req, res) => {
       uid: req.user.uid,
       role: "student",
       name: studentData.name, // Hämtas från Firestore
-      identification: studentData.email, // Hämtas från Firestore
+      identification: studentData.identification, // Hämtas från Firestore
     });
   } catch (error) {
     console.error("Error verifying student:", error.message);
