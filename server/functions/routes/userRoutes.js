@@ -9,7 +9,7 @@ const {
   getLessonplan,
   updateLessonplan,
   createStudentLessonplan,
-  getStudent
+  getStudent,
 } = require("../controllers/userController");
 
 const { teacherMiddleware } = require("../middlewares/teacherMiddleware");
@@ -24,12 +24,12 @@ router.post("/login", login);
 router.post("/logout", logout);
 router.post("/refreshToken", refreshToken);
 router.post("/createLessonplan", teacherMiddleware, createLessonplan);
-router.post("/createStudentLessonplan", teacherMiddleware, createStudentLessonplan);
-router.put("/updateLessonplan", teacherMiddleware, updateLessonplan);
-router.get(
-  "/getLessonplan",
-  teacherMiddleware || studentMiddleware,
-  getLessonplan
+router.post(
+  "/createStudentLessonplan",
+  teacherMiddleware,
+  createStudentLessonplan
 );
+router.put("/updateLessonplan", teacherMiddleware, updateLessonplan);
+router.get("/getLessonplan", teacherMiddleware, getLessonplan);
 
 module.exports = router;
