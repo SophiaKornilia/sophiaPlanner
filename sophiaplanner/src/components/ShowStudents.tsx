@@ -15,15 +15,13 @@ export const ShowStudents = () => {
   const [error, setError] = useState<string | null>(null);
   const { selectedStudents, setSelectedStudents } = useStudentContext();
 
-  if (!user) {
-    console.error("User is not authenticated.");
-    return <p>Please log in to view this page.</p>;
-  }
-
   const teacherId = user?.id;
   // Hämta elever från API
   useEffect(() => {
-    console.log("teacherId", teacherId);
+    if (!user) {
+      console.log("User is not authenticated yet.");
+      return; // Vänta tills `user` är satt
+    }
 
     if (!teacherId) {
       setError("Teacher ID is missing");
@@ -67,6 +65,11 @@ export const ShowStudents = () => {
 
     fetchStudents();
   }, [teacherId]);
+
+  if (!user) {
+    console.error("User is not authenticated.");
+    return <p>Please log in to view this page.</p>;
+  }
 
   // Rendera innehållet
   if (loading) return <p>Loading students...</p>;
