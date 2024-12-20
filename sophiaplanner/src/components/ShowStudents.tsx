@@ -1,0 +1,107 @@
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import API_BASE_URL from "../../config/vercel-config";
+import { useStudentContext } from "../context/StudentContext";
+
+interface Student {
+  id: string;
+  userName: string;
+  name: string;
+}
+export const ShowStudents = () => {
+  const { user } = useContext(AuthContext);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { selectedStudents, setSelectedStudents } = useStudentContext();
+
+  if (!user) {
+    console.error("User is not authenticated.");
+    return <p>Please log in to view this page.</p>;
+  }
+
+  const teacherId = user?.id;
+  // Hämta elever från API
+  useEffect(() => {
+    console.log("teacherId", teacherId);
+
+    if (!teacherId) {
+      setError("Teacher ID is missing");
+      setLoading(false);
+      return;
+    }
+    const bearerToken = localStorage.getItem("idToken");
+    console.log("bearerToken", bearerToken);
+    if (!bearerToken) {
+      setError("Authentication token is missing");
+      setLoading(false);
+      return;
+    }
+
+    const fetchStudents = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/getStudent?teacherId=${teacherId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setStudents(data.students);
+        } else {
+          setError(data.error || "Failed to fetch students");
+        }
+      } catch (err) {
+        console.error("Fetch students error:", err);
+        setError("Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [teacherId]);
+
+  // Rendera innehållet
+  if (loading) return <p>Loading students...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  const toggleStudentSelection = (studentId: string) => {
+    setSelectedStudents((prevSelected) =>
+      prevSelected.includes(studentId)
+        ? prevSelected.filter((id) => id !== studentId)
+        : [...prevSelected, studentId]
+    );
+  };
+
+  return (
+    <div>
+      <h2>Students</h2>
+      {students.length === 0 ? (
+        <p>No students found.</p>
+      ) : (
+        <ul>
+          {students.map((student) => (
+            <li
+              key={student.id}
+              className={`cursor-pointer p-2 ${
+                selectedStudents.includes(student.id)
+                  ? "font-bold bg-blue-100"
+                  : ""
+              }`}
+              onClick={() => toggleStudentSelection(student.id)}
+            >
+              {student.name}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};

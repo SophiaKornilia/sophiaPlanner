@@ -3,12 +3,16 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { AuthContext } from "../context/AuthContext";
 import API_BASE_URL from "../../config/vercel-config";
+import { ShowStudents } from "./ShowStudents";
+import { useStudentContext } from "../context/StudentContext";
 
 export const TextEditor = () => {
   const [content, setContent] = useState<string>(""); // Textinnehållet
   const [title, setTitle] = useState<string>(""); // Titel
   const { user } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
+  const { selectedStudents } = useStudentContext();
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(false);
 
   const quillRef = useRef<ReactQuill>(null); // Ref för ReactQuill
   const userId = user?.id;
@@ -55,6 +59,53 @@ export const TextEditor = () => {
     }
     createLessonPlan(title, content);
   };
+
+  const handlePublishLessonPlan = async () => {
+    if (!title || !content) {
+      alert("Title and content are required.");
+      return;
+    }
+
+    // Skapa lessonplan först och få dess lessonId
+    const lessonId = await createLessonPlan(title, content);
+
+    if (!lessonId) {
+      alert("Failed to create lesson plan.");
+      return;
+    }
+
+    if (selectedStudents.length === 0) {
+      alert("No students selected for publishing.");
+      return;
+    }
+
+    // Skicka varje student till /createStudentLessonplan
+    try {
+      const bearerToken = localStorage.getItem("idToken");
+      const response = await fetch(`${API_BASE_URL}/createStudentLessonplan`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lessonId,
+          studentIds: selectedStudents,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Lesson plan successfully published to selected students!");
+      } else {
+        const data = await response.json();
+        alert(`Failed to publish lesson plan: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error publishing lesson plan:", error);
+      alert("Failed to publish lesson plan.");
+    }
+  };
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -87,24 +138,51 @@ export const TextEditor = () => {
           </button>
         </div>
 
-        {/* Höger sektion: Timer */}
+        {/* Höger sektion: Elever */}
         <div className="w-1/4 bg-white border border-gray-300 rounded shadow-sm p-4">
-          <h3 className="text-lg font-semibold mb-2 text-gray-800">Verktyg</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-800">
+            Tilldela elever
+          </h3>
+          <ShowStudents />
         </div>
       </div>
 
       {/* Modal för förhandsgranskning */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-3/5 p-6">
+          <div className="bg-white rounded-lg shadow-lg w-3/5 p-6 flex flex-col">
             <h2 className="text-2xl font-bold mb-4">
               {title || "Ingen titel angiven"}
             </h2>
-            <div className="quill-preview">
-              <div
-                className="ql-container ql-snow border border-gray-300 p-4 rounded bg-gray-50 min-h-[300px] prose"
-                dangerouslySetInnerHTML={{ __html: content }}
-              ></div>
+            <div className="flex">
+              {/* Text-innehåll */}
+              <div className="quill-preview flex-grow">
+                <div
+                  className="ql-container ql-snow border border-gray-300 p-4 rounded bg-gray-50 min-h-[300px] prose"
+                  dangerouslySetInnerHTML={{ __html: content }}
+                ></div>
+              </div>
+
+              {/* Valda elever */}
+              <div className="ml-4 w-1/3 bg-gray-50 border border-gray-300 p-4 rounded">
+                <h3 className="text-lg font-semibold">
+                  Vid publicering tilldelar du denna planering till:
+                </h3>
+                {selectedStudents.length === 0 ? (
+                  <p className="text-gray-600 mt-2">Inga elever valda.</p>
+                ) : (
+                  <ul className="mt-2">
+                    {selectedStudents.map((studentId) => (
+                      <li
+                        key={studentId}
+                        className="py-1 border-b border-gray-200 last:border-none"
+                      >
+                        {studentId}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
 
             <div className="mt-6 flex justify-end">
@@ -114,15 +192,56 @@ export const TextEditor = () => {
               >
                 Stäng
               </button>
+              {/* Knapp för att bara spara lessonplan */}
+              <button
+                // onClick={() => {
+                //   handleSaveLessonPlan();
+                //   closeModal();
+                // }}
+                onClick={() => setIsSaveModalOpen(true)}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Spara
+              </button>
+
+              {/* Knapp för att publicera till elever */}
               <button
                 onClick={() => {
+                  handlePublishLessonPlan();
                   closeModal();
-                  handleSaveLessonPlan();
-                  // alert("Dokumentet har sparats!");
                 }}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
               >
-                Bekräfta & Spara
+                Bekräfta & Publicera
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal för att bekräfta spara */}
+      {isSaveModalOpen && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-1/3 p-6">
+            <h3 className="text-lg font-semibold mb-4">Spara planering</h3>
+            <p className="mb-4">
+              Planeringen sparas till utkast och kommer inte kopplas till någon
+              elev.
+            </p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setIsSaveModalOpen(false)} // Stäng modalen
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Avbryt
+              </button>
+              <button
+                onClick={() => {
+                  setIsSaveModalOpen(false); // Stäng modalen
+                  handleSaveLessonPlan(); // Anropa funktionen för att spara
+                }}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Bekräfta
               </button>
             </div>
           </div>
