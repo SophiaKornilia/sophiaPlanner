@@ -30,6 +30,9 @@ interface user {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<user | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const sessionId = localStorage.getItem("sessionId");
+  const userId = user?.id; // Hämtar id från user-state
+  const identification = user?.identification;
 
   useEffect(() => {
     const idToken = localStorage.getItem("idToken");
@@ -67,6 +70,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             name: data.name, // Se till att backend skickar tillbaka detta
             identification: data.identification, // Se till att backend skickar tillbaka detta
           });
+
+          console.log("User set in AuthContext:", {
+            id: data.uid,
+            role: data.role,
+            name: data.name,
+            identification: data.identification,
+          });
+
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
@@ -80,9 +91,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     verifyLogin();
   }, []);
-  const sessionId = localStorage.getItem("sessionId");
-  const userId = user?.id; // Hämtar id från user-state
-  const identification = user?.identification;
 
   const logout = async () => {
     if (!identification) {
