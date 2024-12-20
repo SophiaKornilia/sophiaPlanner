@@ -10,6 +10,8 @@ const {
   updateLessonplan,
   createStudentLessonplan,
   getStudent,
+  verifyStudent,
+  verifyTeacher,
 } = require("../controllers/userController");
 
 const { teacherMiddleware } = require("../middlewares/teacherMiddleware");
@@ -22,7 +24,12 @@ router.post("/registerStudent", teacherMiddleware, registerStudent);
 router.get("/getStudent", teacherMiddleware, getStudent);
 router.post("/login", login);
 router.post("/logout", logout);
+
+router.post("/verifyTeacher", teacherMiddleware, verifyTeacher);
+router.post("/verifyStudent", studentMiddleware, verifyStudent);
+
 router.post("/refreshToken", refreshToken);
+
 router.post("/createLessonplan", teacherMiddleware, createLessonplan);
 router.post(
   "/createStudentLessonplan",

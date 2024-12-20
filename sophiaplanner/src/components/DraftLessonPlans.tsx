@@ -19,6 +19,11 @@ export const DraftLessonPlans = () => {
   console.log("userid", user?.id);
 
   useEffect(() => {
+    if (!user) {
+      console.log("User is not authenticated yet.");
+      return; // Vänta tills `user` är satt
+    }
+
     const fetchLessonPlans = async () => {
       const bearerToken = localStorage.getItem("idToken");
 
@@ -38,7 +43,7 @@ export const DraftLessonPlans = () => {
             },
           }
         );
-    
+
         const data = await response.json();
 
         if (response.ok) {

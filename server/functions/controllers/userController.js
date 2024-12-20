@@ -503,3 +503,57 @@ exports.getStudent = async (req, res) => {
     res.status(500).json({ error: "Failed fetch students" });
   }
 };
+
+exports.verifyTeacher = async (req, res) => {
+  try {
+    const db = admin.firestore();
+
+    // Hämta lärarens data från Firestore
+    const teacherRef = db.collection("users").doc(req.user.uid);
+    const teacherDoc = await teacherRef.get();
+
+    if (!teacherDoc.exists) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    const teacherData = teacherDoc.data();
+
+    // Hämta e-post från Firebase Authentication
+    const userRecord = await admin.auth().getUser(req.user.uid);
+
+    res.status(200).json({
+      uid: req.user.uid,
+      role: "teacher",
+      name: teacherData.name, // Hämtas från Firestore
+      identification: userRecord.email, // Hämtas från Firebase Authentication
+    });
+  } catch (error) {
+    console.error("Error verifying teacher:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+exports.verifyStudent = async (req, res) => {
+  try {
+    const db = admin.firestore();
+
+    // Hämta elevens data från Firestore
+    const studentRef = db.collection("students").doc(req.user.uid);
+    const studentDoc = await studentRef.get();
+
+    if (!studentDoc.exists) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    const studentData = studentDoc.data();
+
+    res.status(200).json({
+      uid: req.user.uid,
+      role: "student",
+      name: studentData.name, // Hämtas från Firestore
+      identification: studentData.email, // Hämtas från Firestore
+    });
+  } catch (error) {
+    console.error("Error verifying student:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
