@@ -430,7 +430,38 @@ exports.createStudentLessonplan = async (req, res) => {
   }
 };
 exports.updateLessonplan = async (req, res) => {};
-exports.getLessonplan = async (req, res) => {};
+
+exports.getLessonplan = async (req, res) => {
+  const db = admin.firestore();
+  const { authorId } = req.query; // Hämta authorId från query-parametern
+
+  if (!authorId) {
+    return res.status(400).json({ error: "Author ID is required" });
+  }
+
+  try {
+    const snapshot = await db
+      .collection("lessonplans")
+      .where("authorId", "==", authorId)
+      .get();
+
+    if (snapshot.empty) {
+      return res
+        .status(200)
+        .json({ message: "No lesson plans found.", lessonplans: [] });
+    }
+
+    const lessonplans = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).json({ lessonplans });
+  } catch (error) {
+    console.error("Error fetching lesson plans:", error);
+    res.status(500).json({ error: "Failed to fetch lesson plans." });
+  }
+};
 
 exports.getStudent = async (req, res) => {
   const { teacherId } = req.query;
