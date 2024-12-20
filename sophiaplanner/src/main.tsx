@@ -12,6 +12,7 @@ import HandleAccount from "./pages/HandleAccount";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./context/AuthContext";
+import { StudentProvider } from "./context/StudentContext";
 
 const router = createBrowserRouter([
   {
@@ -52,7 +53,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
+      <StudentProvider>
       <RouterProvider router={router} />
+      </StudentProvider>
     </AuthProvider>
   </StrictMode>
 );
