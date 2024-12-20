@@ -1,64 +1,60 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { AuthContext } from "../context/AuthContext";
+import API_BASE_URL from "../../config/vercel-config";
 
 export const TextEditor = () => {
   const [content, setContent] = useState<string>(""); // Textinnehållet
   const [title, setTitle] = useState<string>(""); // Titel
-  //   const [timers, setTimers] = useState<string[]>([]); // Lista med timers
-  //   const [timerInput, setTimerInput] = useState<number>(0); // Input för minuter
+  const { user } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
 
   const quillRef = useRef<ReactQuill>(null); // Ref för ReactQuill
-
-  //   const [editorInstance, setEditorInstance] = useState<any>(null); // Quill-instans
-
-  //   useEffect(() => {
-  //     if (quillRef.current) {
-  //       const editor = quillRef.current.getEditor(); // Hämta Quill-editor
-  //       if (editor) {
-  //         setEditorInstance(editor); // Sätt editor-instansen i state
-  //       }
-  //     }
-  //   }, []);
-
+  const userId = user?.id;
   // Hantera textförändringar i Quill
   const handleChange = (value: string) => {
     setContent(value);
   };
 
-  // Skapa en ny timer
-  //   const addTimer = () => {
-  //     if (timerInput > 0) {
-  //       setTimers([...timers, `${timerInput} minuter`]);
-  //       setTimerInput(0);
-  //     }
-  //   };
+  const createLessonPlan = async (title: string, content: string) => {
+    if (!userId) {
+      alert("User is not authenticated.");
+      return;
+    }
 
-  //   // Dra och släpp-timer
-  //   const handleDragStart = (e: React.DragEvent, timer: string) => {
-  //     e.dataTransfer.setData("text/plain", `[Timer: ${timer}]`);
-  //   };
+    const bearerToken = localStorage.getItem("idToken");
+    console.log("bearerToken", bearerToken);
 
-  //   const handleDrop = (e: React.DragEvent) => {
-  //     e.preventDefault();
-  //     const text = e.dataTransfer.getData("text/plain");
+    try {
+      const response = await fetch(`${API_BASE_URL}/createLessonplan`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, content, userId }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert("Lesson plan created successfully!");
+        return data.lessonId; // Returnerar lessonId till nästa steg
+      } else {
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error creating lesson plan:", error);
+      alert("Failed to create lesson plan.");
+    }
+  };
 
-  //     if (!editorInstance) {
-  //       console.error("Quill editor not ready yet");
-  //       return;
-  //     }
-
-  //     const range = editorInstance.getSelection(true);
-  //     if (range) {
-  //       editorInstance.insertText(range.index, text, "bold", true);
-  //     }
-  //   };
-
-  //   const handleDragOver = (e: React.DragEvent) => {
-  //     e.preventDefault();
-  //   };
-
+  const handleSaveLessonPlan = () => {
+    if (!title) {
+      alert("Title are required.");
+      return;
+    }
+    createLessonPlan(title, content);
+  };
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -66,11 +62,7 @@ export const TextEditor = () => {
     <div>
       <div className="flex bg-gray-50 min-h-screen p-5">
         {/* Vänster sektion: Editorn */}
-        <div
-          className="w-3/4 pr-4"
-          //   onDrop={handleDrop} // Hantera drop-händelse
-          //   onDragOver={handleDragOver} // Tillåt drop-händelse
-        >
+        <div className="w-3/4 pr-4">
           <input
             type="text"
             placeholder={"Titel på dokumentet"}
@@ -98,36 +90,6 @@ export const TextEditor = () => {
         {/* Höger sektion: Timer */}
         <div className="w-1/4 bg-white border border-gray-300 rounded shadow-sm p-4">
           <h3 className="text-lg font-semibold mb-2 text-gray-800">Verktyg</h3>
-          {/* <p className="text-sm text-gray-600">Skapa en timer:</p> */}
-          {/* <div className="flex mb-4">
-            <input
-              type="number"
-              value={timerInput}
-              onChange={(e) => setTimerInput(Number(e.target.value))}
-              placeholder="Ange minuter"
-              className="border border-gray-300 rounded p-2 w-full mr-2"
-            />
-            <button
-              onClick={addTimer}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-            >
-              Lägg till
-            </button>
-          </div> */}
-
-          {/* Lista över timers */}
-          {/* <ul>
-            {timers.map((timer, index) => (
-              <li
-                key={index}
-                draggable
-                onDragStart={(e) => handleDragStart(e, timer)}
-                className="p-2 bg-gray-100 border border-gray-300 rounded mb-2 text-center cursor-move"
-              >
-                {timer}
-              </li>
-            ))}
-          </ul> */}
         </div>
       </div>
 
@@ -155,7 +117,8 @@ export const TextEditor = () => {
               <button
                 onClick={() => {
                   closeModal();
-                  alert("Dokumentet har sparats!"); // Här kan du lägga till backend-logik
+                  handleSaveLessonPlan();
+                  // alert("Dokumentet har sparats!");
                 }}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
               >

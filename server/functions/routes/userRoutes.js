@@ -8,7 +8,8 @@ const {
   createLessonplan,
   getLessonplan,
   updateLessonplan,
-  createStudentLessonplan
+  createStudentLessonplan,
+  getStudent
 } = require("../controllers/userController");
 
 const { teacherMiddleware } = require("../middlewares/teacherMiddleware");
@@ -18,6 +19,7 @@ const router = express.Router();
 
 router.post("/registerUser", registerUser);
 router.post("/registerStudent", teacherMiddleware, registerStudent);
+router.get("/getStudent", teacherMiddleware, getStudent);
 router.post("/login", login);
 router.post("/logout", logout);
 router.post("/refreshToken", refreshToken);

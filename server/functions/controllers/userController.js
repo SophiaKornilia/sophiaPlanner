@@ -384,7 +384,9 @@ exports.createStudentLessonplan = async (req, res) => {
 
   // Validering av input
   if (!lessonId || !Array.isArray(studentIds) || studentIds.length === 0) {
-    return res.status(400).json({ error: "Lesson ID and a list of student IDs are required" });
+    return res
+      .status(400)
+      .json({ error: "Lesson ID and a list of student IDs are required" });
   }
 
   const db = admin.firestore();
@@ -429,3 +431,44 @@ exports.createStudentLessonplan = async (req, res) => {
 };
 exports.updateLessonplan = async (req, res) => {};
 exports.getLessonplan = async (req, res) => {};
+
+exports.getStudent = async (req, res) => {
+  const { teacherId } = req.query;
+  db = admin.firestore();
+  if (!teacherId) {
+    return res.status(400).json({ error: "Teacher ID is required." });
+  }
+  try {
+    const snapshot = await db
+      .collection("students")
+      .where("teacherId", "==", teacherId)
+      .get();
+
+    if (snapshot.empty) {
+      return res
+        .status(404)
+        .json({ message: "No students found for this teacher." });
+    }
+
+    console.log("snapshot", snapshot);
+    console.log(
+      "Query Result:",
+      snapshot.docs.map((doc) => doc.data())
+    );
+    console.log("Query Snapshot Empty?", snapshot.empty);
+
+    // Omvandla dokument till en array med objekt
+    const students = snapshot.docs.map((doc) => ({
+      id: doc.id, // Lägg till dokumentets ID
+      ...doc.data(), // Lägg till själva dokumentets data
+    }));
+
+    res.status(200).json({
+      message: "Fetching students successfylly",
+      students: students,
+    });
+  } catch (error) {
+    console.error("Error fetching student:", error);
+    res.status(500).json({ error: "Failed fetch students" });
+  }
+};
