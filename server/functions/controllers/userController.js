@@ -557,3 +557,31 @@ exports.verifyStudent = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getStudentLessonPlans = async (req, res) => {
+  const { uid } = req.user; // studentId från middleware
+  console.log("UID received:", uid);
+  const db = admin.firestore();
+
+  try {
+    const lessonPlansRef = db
+      .collection("studentLessonPlans")
+      .where("studentId", "==", "student20");
+    const snapshot = await lessonPlansRef.get();
+    console.log("Snapshot size:", snapshot.size);
+
+    if (snapshot.empty) {
+      return res.status(200).json({ lessonPlans: [] }); // Inga planeringar
+    }
+
+    const lessonPlans = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).json({ lessonPlans });
+  } catch (error) {
+    console.error("Error fetching student lesson plans:", error.message);
+    res.status(500).json({ error: "Failed to fetch lesson plans." });
+  }
+};

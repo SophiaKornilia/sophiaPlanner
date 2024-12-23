@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 
 exports.studentMiddleware = async (req, res, next) => {
   const db = admin.firestore();
-  const sessionId = req.body.sessionId; // Hämta sessionId från body
+  const sessionId = req.body.sessionId || req.headers["session-id"]; // Hämta sessionId från body
   console.log("sessionId", sessionId);
 
   try {
@@ -28,7 +28,7 @@ exports.studentMiddleware = async (req, res, next) => {
 
     // Sätt användarens studentId i request-objektet
     req.user = { uid: sessionData.studentId };
-
+    console.log("Middleware UID:", req.user.uid);
     next(); // Fortsätt till nästa middleware eller route-handler
   } catch (error) {
     console.error("Session validation failed:", error.message);

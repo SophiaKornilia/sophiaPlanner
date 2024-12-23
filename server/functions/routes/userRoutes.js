@@ -12,6 +12,7 @@ const {
   getStudent,
   verifyStudent,
   verifyTeacher,
+  getStudentLessonPlans,
 } = require("../controllers/userController");
 
 const { teacherMiddleware } = require("../middlewares/teacherMiddleware");
@@ -38,5 +39,6 @@ router.post(
 );
 router.put("/updateLessonplan", teacherMiddleware, updateLessonplan);
 router.get("/getLessonplan", teacherMiddleware, getLessonplan);
+router.get("/getStudentLessonPlans", studentMiddleware, getStudentLessonPlans);
 
 module.exports = router;
