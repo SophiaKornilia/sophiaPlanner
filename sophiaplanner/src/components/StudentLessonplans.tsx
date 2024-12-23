@@ -1,4 +1,6 @@
+
 import { useEffect, useState } from "react";
+import { interval, switchMap, from } from "rxjs";
 import API_BASE_URL from "../../config/vercel-config";
 
 interface LessonPlan {
@@ -10,21 +12,22 @@ interface LessonPlan {
 }
 
 export const StudentLessonPlans = () => {
-  const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedLessonPlan, setSelectedLessonPlan] = useState<LessonPlan | null>(null);
+  const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([]); // Håller alla lektionsplaner
+  const [loading, setLoading] = useState<boolean>(true); // Håller laddningsstatus
+  const [error, setError] = useState<string | null>(null); // Håller eventuella felmeddelanden
+  const [selectedLessonPlan, setSelectedLessonPlan] = useState<LessonPlan | null>(null); // Håller vald lektionsplan
 
   useEffect(() => {
+    // Hämta session-id från localStorage
+    const sessionId = localStorage.getItem("sessionId");
+    if (!sessionId) {
+      setError("Session ID saknas. Logga in igen.");
+      setLoading(false);
+      return;
+    }
+
+    // Funktion för att hämta lektionsplaner med async/await och try/catch
     const fetchLessonPlans = async () => {
-      const sessionId = localStorage.getItem("sessionId");
-
-      if (!sessionId) {
-        setError("Session ID saknas. Logga in igen.");
-        setLoading(false);
-        return;
-      }
-
       try {
         const response = await fetch(`${API_BASE_URL}/getStudentLessonPlans`, {
           method: "GET",
@@ -34,35 +37,49 @@ export const StudentLessonPlans = () => {
           },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setLessonPlans(data.lessonPlans);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.error || "Kunde inte hämta planeringar.");
+        if (!response.ok) {
+          throw new Error("Kunde inte hämta planeringar");
         }
+
+        const data = await response.json();
+        return data.lessonPlans; // Returnerar planerna
       } catch (err) {
         console.error("Error fetching lesson plans:", err);
         setError("Något gick fel. Försök igen senare.");
-      } finally {
-        setLoading(false);
+        return []; // Returnerar tom array vid fel
       }
     };
 
-    fetchLessonPlans();
-  }, []);
+    // Skapar en RxJs Observable som triggar var 10:e sekund
+    const subscription = interval(10000) // Uppdatering var 10:e sekund
+      .pipe(
+        switchMap(() => from(fetchLessonPlans())) // Anropar API:t och returnerar en Observable
+      )
+      .subscribe((plans) => {
+        setLessonPlans(plans); // Uppdaterar state med nya lektionsplaner
+        setLoading(false); // Stoppar laddningsstatus
+      });
 
-  if (loading) return <p>Loading lesson plans...</p>;
-  if (error) return <p>Error: {error}</p>;
+    return () => subscription.unsubscribe(); // Rensar prenumerationen när komponenten avmonteras
+  }, []); // Körs endast vid första renderingen
 
+  // Funktion för att öppna en vald lektionsplan
   const openLessonPlan = (plan: LessonPlan) => {
     setSelectedLessonPlan(plan);
   };
 
+  // Funktion för att stänga modalen
   const closeLessonPlan = () => {
     setSelectedLessonPlan(null);
   };
 
+  // Renderar laddningsmeddelande om data laddas
+  if (loading) return <p>Loading lesson plans...</p>;
+
+  // Renderar felmeddelande om något gått fel
+  if (error) return <p>Error: {error}</p>;
+
+  // Renderar lektionsplanerna
   return (
     <div className="p-4">
       <h2 className="text-lg font-bold mb-4">Dina Planeringar</h2>
@@ -82,7 +99,7 @@ export const StudentLessonPlans = () => {
         </ul>
       )}
 
-      {/* Modal */}
+      {/* Modal för att visa vald lektionsplan */}
       {selectedLessonPlan && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 shadow-lg w-3/5">
