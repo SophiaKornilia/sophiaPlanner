@@ -114,13 +114,13 @@ const Login = () => {
   return (
     <div>
       <Header />
-      <div className="h-screen items-start bg-background font-sans flex justify-center">
-        <form className="h-2/4 w-1/4  bg-secondary mt-[10%] flex flex-col items-center justify-center p-6 rounded-lg shadow-md">
+      <div className="h-screen items-start bg-gradient-to-b from-primary to-background font-sans flex justify-center">
+        <form className="h-2/4 w-11/12 md:w-1/3 lg:w-1/4 bg-secondary mt-[10%] flex flex-col items-center justify-center p-6 px-4 py-10 rounded-lg shadow-md gap-4">
           <label className="mb-2 text-lg font-semibold">
             Användarnamn/epost:
           </label>
           <input
-            className="mb-4 p-2 w-full max-w-xs border rounded-md"
+            className="mb-4 p-2 w-full md:w-full lg:max-w-xs border rounded-md"
             type="text"
             id="email"
             value={loginForm.identification}
@@ -131,7 +131,7 @@ const Login = () => {
           ></input>
           <label className="mb-2 text-lg font-semibold">Lösenord:</label>
           <input
-            className="mb-4 p-2 w-full max-w-xs border rounded-md"
+            className="mb-4 p-2 w-full md:w-full lg:max-w-xs border rounded-md"
             type="password"
             id="password"
             value={loginForm.password}
@@ -141,7 +141,7 @@ const Login = () => {
             required
           ></input>
           <button
-            className="custom-button hover:bg-opacity-80"
+            className="custom-button hover:bg-opacity-80 w-full py-3"
             onClick={handleLogin}
           >
             Logga in
