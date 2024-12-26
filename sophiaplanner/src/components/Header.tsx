@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import logo from "../assets/images/SophiaPlanner_logo.png";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Register from "./Register";
 
@@ -8,8 +8,23 @@ export const Header = () => {
   const { logout, user } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false); // Hanterar hamburgermenyn
   const [showRegister, setShowRegister] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 640);
 
-  const isLargeHeader = !user || user.role === "student"; // Dynamisk höjd
+  const isLargeHeader =
+    !user ||
+    user.role === "student" ||
+    (user.role === "teacher" && isMobileView); // Dynamisk höjd
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 640);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handleLogoutClick = async () => {
     await logout();
@@ -99,14 +114,56 @@ export const Header = () => {
         <nav className="fixed top-20 left-0 w-full bg-white text-text shadow-md sm:hidden z-20">
           <ul className="flex flex-col space-y-2 p-4">
             {user ? (
-              <li>
-                <button
-                  className="w-full text-left"
-                  onClick={handleLogoutClick}
-                >
-                  Logga ut
-                </button>
-              </li>
+              user.role === "teacher" ? (
+                // Lärare-meny
+                <>
+                  <li>
+                    <NavLink
+                      to="/CreateStudentAccount"
+                      className="block w-full text-left"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Skapa elevkonto
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/HandleAccount"
+                      className="block w-full text-left"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Hantera mina konton
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/CreateLessonPlan"
+                      className="block w-full text-left"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Skapa elevplaneringar
+                    </NavLink>
+                  </li>
+                  <li>
+                    <button
+                      className="block w-full text-left text-red-600 font-bold"
+                      onClick={handleLogoutClick}
+                    >
+                      Logga ut
+                    </button>
+                  </li>
+                </>
+              ) : (
+                //student user
+                <li>
+                  <button
+                    className="block w-full text-left text-red-600 font-bold"
+                    onClick={handleLogoutClick}
+                  >
+                    Logga ut
+                  </button>
+                </li>
+              )
             ) : (
               <>
                 <li>
@@ -130,6 +187,55 @@ export const Header = () => {
             )}
           </ul>
         </nav>
+      )}
+
+      {user?.role === "teacher" && (
+        <div className="hidden sm:flex items-center justify-end px-8 bg-primary h-14">
+          <nav>
+            <ul className="flex space-x-8">
+              <li>
+                <NavLink
+                  to={"/CreateStudentAccount"}
+                  className={({ isActive }) =>
+                    isActive ? " font-semibold underline" : "hover:underline"
+                  }
+                >
+                  Skapa elevkonto
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/HandleAccount"}
+                  className={({ isActive }) =>
+                    isActive ? " font-semibold underline" : "hover:underline"
+                  }
+                >
+                  Hantera mina konton
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/CreateLessonPlan"}
+                  className={({ isActive }) =>
+                    isActive ? " font-semibold underline" : "hover:underline"
+                  }
+                >
+                  Skapa elevplaneringar
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/DashboardTeacher"}
+                  className={({ isActive }) =>
+                    isActive ? " font-semibold underline" : "hover:underline"
+                  }
+                >
+                  Home
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        </div>
       )}
 
       {/* Visa Register-komponenten */}
