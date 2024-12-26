@@ -27,6 +27,7 @@ export default {
   plugins: [typography],
 };
 
+//color
 //primary: En grundfärg som ofta används på knappar och framhävda element.
 //secondary: En stödjande färg som kan användas för andra viktiga element.
 //background: Färg för sidans bakgrund.
