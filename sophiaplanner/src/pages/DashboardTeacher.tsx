@@ -1,6 +1,6 @@
 import { DraftLessonPlans } from "../components/DraftLessonPlans";
 import { Header } from "../components/Header";
-import { ShowStudents } from "../components/ShowStudents";
+import { ShowStudentCard } from "../components/ShowStudentCard";
 
 const DashboardTeacher = () => {
   return (
@@ -14,7 +14,7 @@ const DashboardTeacher = () => {
             <h1 className="text-white text-xl font-bold m-3 flex justify-center ">
               Mina elever
             </h1>
-            <ShowStudents />
+            <ShowStudentCard />
           </div>
           <div className="bg-primary w-[95%] md:w-[48%] h-full flex flex-col rounded-md mx-2 overflow-y-scroll">
             <h1 className="text-white text-xl font-bold m-3 flex justify-center">
