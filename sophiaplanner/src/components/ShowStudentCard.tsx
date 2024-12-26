@@ -94,18 +94,20 @@ export const ShowStudentCard = () => {
   };
 
   return (
-    <div>
+    <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
+      <h2 className="text-2xl font-bold text-text mb-4">Mina elever</h2>
+
       {students.length === 0 ? (
         <p className="text-center text-text">Inga elever hittades.</p>
       ) : (
-        <ul className="overflow-y-auto max-h-60 bg-primary p-2 rounded-md">
+        <ul className="overflow-y-auto max-h-[300px] space-y-2">
           {students.map((student) => (
             <li
               key={student.id}
-              className={`cursor-pointer p-2 mb-1 rounded hover:bg-secondary hover:text-white ${
+              className={`bg-primary text-white p-4 rounded-md shadow hover:bg-opacity-90 transition duration-300 cursor-pointer font-bold ${
                 selectedStudents.includes(student.id)
-                  ? "bg-accent text-white"
-                  : "text-text font-bold"
+                  ? "bg-primary text-white font-semibold"
+                  : "bg-primary text-text hover:bg-accent hover:text-white"
               }`}
               onClick={() => {
                 setSelectedStudent(student);
@@ -117,21 +119,23 @@ export const ShowStudentCard = () => {
           ))}
         </ul>
       )}
+
+      {/* Modal för elevinformation */}
       {isModalOpen && selectedStudent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-sm mx-4 shadow-lg">
-            <h2 className="text-2xl font-bold mb-4 text-center text-primary">
+          <div className="bg-primary rounded-lg p-6 w-full max-w-md mx-4 shadow-lg overflow-y-auto">
+            <h2 className="text-2xl font-bold text-white mb-4 text-center">
               Elevinformation
             </h2>
-            <p className="text-base text-gray-700">
+            <p className="text-lg text-white">
               <strong>Namn:</strong> {selectedStudent.name}
             </p>
-            <p className="text-base text-gray-700">
+            <p className="text-lg text-white mt-2">
               <strong>Användarnamn:</strong> {selectedStudent.userName}
             </p>
             <button
               onClick={closeModal}
-              className="mt-6 bg-accent text-white w-full py-2 rounded hover:bg-accent-light"
+              className="mt-6 bg-secondary text-white w-full py-2 rounded hover:bg-accent hover:text-white transition"
             >
               Stäng
             </button>

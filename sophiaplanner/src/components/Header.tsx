@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/SophiaPlanner_logo.png";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -9,6 +9,7 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false); // Hanterar hamburgermenyn
   const [showRegister, setShowRegister] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 640);
+  const navigate = useNavigate();
 
   const isLargeHeader =
     !user ||
@@ -28,6 +29,7 @@ export const Header = () => {
 
   const handleLogoutClick = async () => {
     await logout();
+    navigate("/");
     setMenuOpen(false); // Stäng menyn vid utloggning
   };
 
@@ -126,7 +128,7 @@ export const Header = () => {
                       Skapa elevkonto
                     </NavLink>
                   </li>
-                  <li>
+                  {/* <li>
                     <NavLink
                       to="/HandleAccount"
                       className="block w-full text-left"
@@ -134,7 +136,7 @@ export const Header = () => {
                     >
                       Hantera mina konton
                     </NavLink>
-                  </li>
+                  </li> */}
                   <li>
                     <NavLink
                       to="/CreateLessonPlan"
@@ -203,7 +205,7 @@ export const Header = () => {
                   Skapa elevkonto
                 </NavLink>
               </li>
-              <li>
+              {/* <li>
                 <NavLink
                   to={"/HandleAccount"}
                   className={({ isActive }) =>
@@ -212,7 +214,7 @@ export const Header = () => {
                 >
                   Hantera mina konton
                 </NavLink>
-              </li>
+              </li> */}
               <li>
                 <NavLink
                   to={"/CreateLessonPlan"}
@@ -230,7 +232,7 @@ export const Header = () => {
                     isActive ? " font-semibold underline" : "hover:underline"
                   }
                 >
-                  Home
+                  Hem
                 </NavLink>
               </li>
             </ul>

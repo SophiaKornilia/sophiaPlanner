@@ -66,14 +66,17 @@ export const DraftLessonPlans = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
-      <h1>My Draft Lesson Plans</h1>
+    <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
+      <h1 className="text-2xl font-bold text-text mb-4">Mina utkast</h1>
       {lessonPlans.length === 0 ? (
-        <p>No draft lesson plans found.</p>
+        <p className="text-text text-center">Inga utkast hittades.</p>
       ) : (
-        <ul>
+        <ul className="overflow-y-auto max-h-[300px] space-y-2">
           {lessonPlans.map((lesson) => (
-            <li key={lesson.id} className="p-4 border border-gray-300 mb-2">
+            <li
+              key={lesson.id}
+              className="bg-primary text-white p-4 rounded-md shadow  transition duration-300 "
+            >
               <h4 className="text-lg font-semibold">{lesson.title}</h4>
             </li>
           ))}
