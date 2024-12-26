@@ -202,19 +202,52 @@ export const TextEditor = () => {
                 Stäng
               </button>
               <button
-                onClick={() => setIsSaveModalOpen(true)}
+                onClick={() => {
+                  setIsSaveModalOpen(true);
+                }}
                 className="bg-secondary hover:bg-blue-600 text-white px-4 py-2 rounded mr-2"
               >
                 Spara
               </button>
               <button
                 onClick={() => {
+                  handleSaveLessonPlan();
                   handlePublishLessonPlan();
                   closeModal();
                 }}
                 className="bg-accent text-white px-4 py-2 rounded"
               >
                 Bekräfta & Publicera
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isSaveModalOpen && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
+            <h3 className="text-xl font-bold mb-4 text-center md:text-left">
+              Spara planering
+            </h3>
+            <p className="mb-6 text-gray-700 text-center md:text-left">
+              Planeringen sparas till utkast och kommer inte kopplas till någon
+              elev.
+            </p>
+            <div className="flex flex-col md:flex-row justify-between gap-4">
+              <button
+                onClick={() => setIsSaveModalOpen(false)} // Stäng modalen
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded w-full md:w-auto"
+              >
+                Avbryt
+              </button>
+              <button
+                onClick={() => {
+                  setIsSaveModalOpen(false); // Stäng modalen
+                  handleSaveLessonPlan(); // Anropa funktionen för att spara
+                }}
+                className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"
+              >
+                Bekräfta
               </button>
             </div>
           </div>

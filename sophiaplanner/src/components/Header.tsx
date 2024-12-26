@@ -29,8 +29,8 @@ export const Header = () => {
 
   const handleLogoutClick = async () => {
     await logout();
-    navigate("/");
     setMenuOpen(false); // Stäng menyn vid utloggning
+    navigate("/");
   };
 
   const handleShowRegister = () => {

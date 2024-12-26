@@ -14,12 +14,8 @@ export const ShowStudentCard = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const {
-    selectedStudent,
-    setSelectedStudent,
-    selectedStudents,
-    setSelectedStudents,
-  } = useStudentContext();
+  const { selectedStudent, setSelectedStudent, selectedStudents } =
+    useStudentContext();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -84,14 +80,6 @@ export const ShowStudentCard = () => {
 
   if (loading) return <p>Loading students...</p>;
   if (error) return <p>Error: {error}</p>;
-
-  const toggleStudentSelection = (studentId: string) => {
-    setSelectedStudents((prev) =>
-      prev.includes(studentId)
-        ? prev.filter((id) => id !== studentId)
-        : [...prev, studentId]
-    );
-  };
 
   return (
     <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
