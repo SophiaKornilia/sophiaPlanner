@@ -12,7 +12,7 @@ const routes = [
   { path: "/HandleAccount", changefreq: "monthly", priority: 0.7 },
   { path: "/LoginPage", changefreq: "monthly", priority: 0.7 },
   { path: "/Register", changefreq: "monthly", priority: 0.7 },
-];
+]; 
 
 // Skapa sitemap
 const hostname = "https://sophiaplanner-vercel.app";
