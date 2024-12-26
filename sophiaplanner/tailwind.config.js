@@ -6,10 +6,10 @@ export default {
     extend: {
       colors: {
         primary: "#a1dec9",
-        secondary: "#ba8a93",
+        secondary: "#B86B77",
         background: "#FDF4E3",
         text: "#543c29",
-        accent: "#773E13",
+        accent: "#5A3723 ",
       },
       fontFamily: {
         sans: ["Parkinsans", "sans-serif"],
