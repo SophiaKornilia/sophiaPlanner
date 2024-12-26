@@ -13,6 +13,9 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./context/AuthContext";
 import { StudentProvider } from "./context/StudentContext";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Register from "./components/Register";
 
 const router = createBrowserRouter([
   {
@@ -48,13 +51,17 @@ const router = createBrowserRouter([
     path: "/LoginPage",
     element: <LoginPage />,
   },
+  {
+    path: "/Register",
+    element: <Register /> 
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
       <StudentProvider>
-      <RouterProvider router={router} />
+        <RouterProvider router={router} />
       </StudentProvider>
     </AuthProvider>
   </StrictMode>

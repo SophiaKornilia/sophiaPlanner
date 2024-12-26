@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const sessionId = localStorage.getItem("sessionId");
   const userId = user?.id; // Hämtar id från user-state
   const identification = user?.identification;
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const idToken = localStorage.getItem("idToken");

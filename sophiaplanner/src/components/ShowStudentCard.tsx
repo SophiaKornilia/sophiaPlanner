@@ -1,0 +1,135 @@
+import { useContext, useEffect, useState } from "react";
+import { useStudentContext } from "../context/StudentContext";
+import { AuthContext } from "../context/AuthContext";
+import API_BASE_URL from "../../config/vercel-config";
+
+interface Student {
+  id: string;
+  userName: string;
+  name: string;
+}
+
+export const ShowStudentCard = () => {
+  const { user } = useContext(AuthContext);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { selectedStudent, setSelectedStudent, selectedStudents } =
+    useStudentContext();
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const teacherId = user?.id;
+  // Hämta elever från API
+  useEffect(() => {
+    if (!user) {
+      console.log("User is not authenticated yet.");
+      return; // Vänta tills `user` är satt
+    }
+
+    if (!teacherId) {
+      setError("Teacher ID is missing");
+      setLoading(false);
+      return;
+    }
+    const bearerToken = localStorage.getItem("idToken");
+    console.log("bearerToken", bearerToken);
+    if (!bearerToken) {
+      setError("Authentication token is missing");
+      setLoading(false);
+      return;
+    }
+
+    const fetchStudents = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/getStudent?teacherId=${teacherId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setStudents(data.students);
+        } else {
+          setError(data.error || "Failed to fetch students");
+        }
+      } catch (err) {
+        console.error("Fetch students error:", err);
+        setError("Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [teacherId]);
+
+  if (!user) {
+    console.error("User is not authenticated.");
+    return <p>Please log in to view this page.</p>;
+  }
+
+  if (loading) return <p>Loading students...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  return (
+    <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
+      <h2 className="text-2xl font-bold text-text mb-4">Mina elever</h2>
+
+      {students.length === 0 ? (
+        <p className="text-center text-text">Inga elever hittades.</p>
+      ) : (
+        <ul className="overflow-y-auto max-h-[300px] space-y-2">
+          {students.map((student) => (
+            <li
+              key={student.id}
+              className={`bg-primary text-white p-4 rounded-md shadow hover:bg-opacity-90 transition duration-300 cursor-pointer font-bold ${
+                selectedStudents.includes(student.id)
+                  ? "bg-primary text-white font-semibold"
+                  : "bg-primary text-text hover:bg-accent hover:text-white"
+              }`}
+              onClick={() => {
+                setSelectedStudent(student);
+                openModal();
+              }}
+            >
+              {student.name}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Modal för elevinformation */}
+      {isModalOpen && selectedStudent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-primary rounded-lg p-6 w-full max-w-md mx-4 shadow-lg overflow-y-auto">
+            <h2 className="text-2xl font-bold text-white mb-4 text-center">
+              Elevinformation
+            </h2>
+            <p className="text-lg text-white">
+              <strong>Namn:</strong> {selectedStudent.name}
+            </p>
+            <p className="text-lg text-white mt-2">
+              <strong>Användarnamn:</strong> {selectedStudent.userName}
+            </p>
+            <button
+              onClick={closeModal}
+              className="mt-6 bg-secondary text-white w-full py-2 rounded hover:bg-accent hover:text-white transition"
+            >
+              Stäng
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

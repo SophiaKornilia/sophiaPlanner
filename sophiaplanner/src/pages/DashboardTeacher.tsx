@@ -1,30 +1,19 @@
 import { DraftLessonPlans } from "../components/DraftLessonPlans";
 import { Header } from "../components/Header";
-import { ShowStudents } from "../components/ShowStudents";
+import { ShowStudentCard } from "../components/ShowStudentCard";
 
 const DashboardTeacher = () => {
   return (
     <div>
       <Header />
-      <div className="h-screen flex justify-center items-center bg-background font-sans">
+      <div className="h-screen flex justify-center items-start bg-gradient-to-b from-primary to-background font-sans">
         {/* Yttre ruta */}
-        <div className="bg-secondary h-3/4 w-3/4 flex flex-row justify-between items-center p-6 rounded-lg shadow-lg">
+        <div className="bg-secondary w-[90%] max-w-5xl flex flex-col md:flex-row justify-between items-center p-4 md:p-6 rounded-lg shadow-lg gap-4 md:mt-4 lg:mt-8">
           {/* Inre rutor */}
-          <div className="bg-primary h-full w-1/2 flex flex-col rounded-md mx-2">
-            <h1 className="text-white text-xl font-bold m-3 flex justify-center">
-              Mina elever
-            </h1>
-            <ShowStudents />
+          <div className="flex-grow w-full md:w-1/2">
+            <ShowStudentCard />
           </div>
-          {/* <div className="bg-primary h-full w-1/3 flex flex-col rounded-md mx-2">
-            <h1 className="text-white text-xl font-bold m-3 flex justify-center">
-              Mina grupper
-            </h1>
-          </div> */}
-          <div className="bg-primary h-full w-1/2 flex flex-col rounded-md mx-2">
-            <h1 className="text-white text-xl font-bold m-3 flex justify-center">
-              Mina utkast
-            </h1>
+          <div className="flex-grow w-full md:w-1/2">
             <DraftLessonPlans />
           </div>
         </div>

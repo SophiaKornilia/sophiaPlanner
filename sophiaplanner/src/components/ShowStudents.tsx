@@ -85,7 +85,6 @@ export const ShowStudents = () => {
 
   return (
     <div>
-      <h2>Students</h2>
       {students.length === 0 ? (
         <p>No students found.</p>
       ) : (

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { interval, switchMap, from } from "rxjs";
 import API_BASE_URL from "../../config/vercel-config";
@@ -15,7 +14,8 @@ export const StudentLessonPlans = () => {
   const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([]); // Håller alla lektionsplaner
   const [loading, setLoading] = useState<boolean>(true); // Håller laddningsstatus
   const [error, setError] = useState<string | null>(null); // Håller eventuella felmeddelanden
-  const [selectedLessonPlan, setSelectedLessonPlan] = useState<LessonPlan | null>(null); // Håller vald lektionsplan
+  const [selectedLessonPlan, setSelectedLessonPlan] =
+    useState<LessonPlan | null>(null); // Håller vald lektionsplan
 
   useEffect(() => {
     // Hämta session-id från localStorage
@@ -82,18 +82,35 @@ export const StudentLessonPlans = () => {
   // Renderar lektionsplanerna
   return (
     <div className="p-4">
-      <h2 className="text-lg font-bold mb-4">Dina Planeringar</h2>
+      {/* Välkomsttext */}
+      <div className="bg-secondary text-text p-4 rounded-lg shadow-md mb-6">
+        <h1 className="text-3xl font-bold mb-2 text-center md:text-left">
+          Välkommen!
+        </h1>
+        <p className="text-lg text-text">
+          Här hittar du alla lektionsplaneringar som dina lärare har tilldelat
+          dig. Klicka på en planering för att öppna och läsa den. Se till att
+          följa instruktionerna i varje planering och fråga din lärare om du har
+          några frågor.
+        </p>
+      </div>
+
+      {/* Planeringslista */}
+      <h2 className="text-2xl font-bold text-primary mb-4 text-center md:text-left">
+        Dina Planeringar
+      </h2>
+
       {lessonPlans.length === 0 ? (
-        <p>Inga planeringar hittades.</p>
+        <p className="text-gray-600 text-center">Inga planeringar hittades.</p>
       ) : (
-        <ul>
+        <ul className="space-y-3 max-h-[400px] overflow-y-scroll border rounded-md bg-secondary p-4 shadow-md ">
           {lessonPlans.map((plan) => (
             <li
               key={plan.id}
-              className="p-2 border rounded cursor-pointer hover:bg-gray-100"
+              className="p-4 bg-primary text-white rounded-lg shadow hover:shadow-lg hover:bg-secondary hover:text-black transition-all cursor-pointer"
               onClick={() => openLessonPlan(plan)}
             >
-              {plan.title}
+              <h4 className="text-lg font-semibold">{plan.title}</h4>
             </li>
           ))}
         </ul>
@@ -101,16 +118,18 @@ export const StudentLessonPlans = () => {
 
       {/* Modal för att visa vald lektionsplan */}
       {selectedLessonPlan && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg w-3/5">
-            <h2 className="text-xl font-bold mb-4">{selectedLessonPlan.title}</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-11/12 max-w-3xl max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-primary mb-4 text-center">
+              {selectedLessonPlan.title}
+            </h2>
             <div
-              className="prose"
+              className="prose text-gray-800"
               dangerouslySetInnerHTML={{ __html: selectedLessonPlan.content }}
             ></div>
-            <div className="mt-4 flex justify-end">
+            <div className="mt-6 flex justify-end">
               <button
-                className="bg-gray-400 text-white px-4 py-2 rounded mr-2"
+                className="bg-accent text-white px-6 py-2 rounded-lg hover:bg-accent-light transition-all"
                 onClick={closeLessonPlan}
               >
                 Stäng
@@ -120,5 +139,50 @@ export const StudentLessonPlans = () => {
         </div>
       )}
     </div>
+
+    // <div className="p-4">
+    //   <h2 className="text-2xl font-bold text-primary mb-4 text-center md:text-left">
+    //     Dina Planeringar
+    //   </h2>
+
+    //   {lessonPlans.length === 0 ? (
+    //     <p className="text-gray-600 text-center">Inga planeringar hittades.</p>
+    //   ) : (
+    //     <ul className="space-y-3 max-h-[400px] overflow-y-auto border rounded-md bg-secondary p-4 shadow-md">
+    //       {lessonPlans.map((plan) => (
+    //         <li
+    //           key={plan.id}
+    //           className="p-4 bg-primary text-white rounded-lg shadow hover:shadow-lg hover:bg-secondary hover:text-black transition-all cursor-pointer"
+    //           onClick={() => openLessonPlan(plan)}
+    //         >
+    //           <h4 className="text-lg font-semibold">{plan.title}</h4>
+    //         </li>
+    //       ))}
+    //     </ul>
+    //   )}
+
+    //   {/* Modal för att visa vald lektionsplan */}
+    //   {selectedLessonPlan && (
+    //     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    //       <div className="bg-white rounded-lg p-6 shadow-lg w-11/12 max-w-3xl max-h-[80vh] overflow-y-auto">
+    //         <h2 className="text-2xl font-bold text-primary mb-4 text-center">
+    //           {selectedLessonPlan.title}
+    //         </h2>
+    //         <div
+    //           className="prose text-gray-800"
+    //           dangerouslySetInnerHTML={{ __html: selectedLessonPlan.content }}
+    //         ></div>
+    //         <div className="mt-6 flex justify-end">
+    //           <button
+    //             className="bg-accent text-white px-6 py-2 rounded-lg hover:bg-accent-light transition-all"
+    //             onClick={closeLessonPlan}
+    //           >
+    //             Stäng
+    //           </button>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   )}
+    // </div>
   );
 };

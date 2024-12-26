@@ -1,11 +1,14 @@
 import { Header } from "../components/Header";
-import Register from "../components/Register";
+import HomeCarousel from "../components/HomeCarousel";
+
+// import Register from "../components/Register";
 
 const Home = () => {
   return (
     <div>
       <Header />
-      <Register />
+      <HomeCarousel />
+      {/* <Register /> */}
     </div>
   );
 };

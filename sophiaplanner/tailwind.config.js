@@ -5,11 +5,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#66D1B6",
+        primary: "#a1dec9",
         secondary: "#F4B6C2",
         background: "#FDF4E3",
-        text: "#A47551",
+        text: "#543c29",
         accent: "#E9A36E",
+
+        
       },
       fontFamily: {
         sans: ["Parkinsans", "sans-serif"],
