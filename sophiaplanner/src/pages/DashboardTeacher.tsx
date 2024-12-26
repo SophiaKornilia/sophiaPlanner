@@ -6,22 +6,17 @@ const DashboardTeacher = () => {
   return (
     <div>
       <Header />
-      <div className="h-screen flex justify-center items-center bg-background font-sans">
+      <div className="h-screen flex justify-center items-start bg-gradient-to-b from-primary to-background font-sans">
         {/* Yttre ruta */}
-        <div className="bg-secondary h-3/4 w-3/4 flex flex-row justify-between items-center p-6 rounded-lg shadow-lg">
+        <div className="bg-secondary h-[70%]  w-[90%] max-w-5xl flex flex-col md:flex-row justify-between items-center p-4 md:p-6 rounded-lg shadow-lg gap-4 md:mt-4 lg:mt-8">
           {/* Inre rutor */}
-          <div className="bg-primary h-full w-1/2 flex flex-col rounded-md mx-2">
-            <h1 className="text-white text-xl font-bold m-3 flex justify-center">
+          <div className="bg-primary w-[95%] md:w-[48%] h-full flex flex-col rounded-md mx-2 overflow-y-scroll">
+            <h1 className="text-white text-xl font-bold m-3 flex justify-center ">
               Mina elever
             </h1>
             <ShowStudents />
           </div>
-          {/* <div className="bg-primary h-full w-1/3 flex flex-col rounded-md mx-2">
-            <h1 className="text-white text-xl font-bold m-3 flex justify-center">
-              Mina grupper
-            </h1>
-          </div> */}
-          <div className="bg-primary h-full w-1/2 flex flex-col rounded-md mx-2">
+          <div className="bg-primary w-[95%] md:w-[48%] h-full flex flex-col rounded-md mx-2 overflow-y-scroll">
             <h1 className="text-white text-xl font-bold m-3 flex justify-center">
               Mina utkast
             </h1>
