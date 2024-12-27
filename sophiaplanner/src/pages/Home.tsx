@@ -1,14 +1,13 @@
+import { FramerCarousel } from "../components/FramerCarousel";
 import { Header } from "../components/Header";
-import HomeCarousel from "../components/HomeCarousel";
-
-// import Register from "../components/Register";
+// import HomeCarousel from "../components/HomeCarousel";
 
 const Home = () => {
   return (
     <div>
       <Header />
-      <HomeCarousel />
-      {/* <Register /> */}
+      {/* <HomeCarousel /> */}
+      <FramerCarousel />
     </div>
   );
 };

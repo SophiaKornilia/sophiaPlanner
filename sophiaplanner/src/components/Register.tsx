@@ -78,9 +78,9 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <div className="h-screen flex justify-center flex-start items-center bg-gradient-to-b from-primary to-background px-4 py-4 font-sans overflow-scroll ">
-        <div className="h-screen flex justify-center items-start bg-gradient-to-b from-primary to-background px-4 py-14 font-sans overflow-hidden">
+    <>
+      <div className="h-screen w-full flex justify-center flex-start items-center bg-gradient-to-b from-primary to-background px-4 py-4 font-sans overflow-y-scroll ">
+        <div className=" flex justify-center items-start bg-gradient-to-b from-primary to-background px-4 py-14 font-sans overflow-hidden">
           <div className="w-full max-w-6xl bg-secondary p-6 md:p-8 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-6">
             {/* Vänster sektion - Introduktion */}
             <div className="w-full md:w-1/2 text-center md:text-left px-6 py-4">
@@ -167,7 +167,7 @@ const Register = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
