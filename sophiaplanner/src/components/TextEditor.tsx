@@ -13,17 +13,24 @@ export const TextEditor = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
   const { selectedStudents } = useStudentContext();
   const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(false);
-
+  const [alertModal, setAlertModal] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const quillRef = useRef<ReactQuill>(null); // Ref för ReactQuill
   const userId = user?.id;
+  const [saveModalText, setSaveModalText] = useState<string>("");
+  const [saveModalTitle, setSaveModalTitle] = useState<string>("");
+  const [hasError, setHasError] = useState(false);
+
   // Hantera textförändringar i Quill
   const handleChange = (value: string) => {
-    setContent(value);
+    setContent(value.trim());
   };
 
+  //skapa färdiga lektionsplaneringar
   const createLessonPlan = async (title: string, content: string) => {
     if (!userId) {
-      alert("User is not authenticated.");
+      setError("User is not authenticated.");
+      //todo navigare to start??
       return;
     }
 
@@ -41,20 +48,28 @@ export const TextEditor = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert("Lesson plan created successfully!");
+        setError("Lesson plan created successfully!");
         return data.lessonId; // Returnerar lessonId till nästa steg
       } else {
-        alert(`Error: ${data.error}`);
+        setError(`Error: ${data.error}`);
       }
     } catch (error) {
       console.error("Error creating lesson plan:", error);
-      alert("Failed to create lesson plan.");
+      setError("Failed to create lesson plan.");
     }
   };
 
+  //sparar lessonplan om titel finns
   const handleSaveLessonPlan = () => {
     if (!title) {
-      alert("Title are required.");
+      console.log("oj ingen titel, öppna modal");
+      // alert("Title are required.");
+
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Ingen titel!");
+      setAlertModal(true);
+      closeModal();
+      //katodo gör en modal istället för alert, eventellet röd text
       return;
     }
     createLessonPlan(title, content);
@@ -62,7 +77,12 @@ export const TextEditor = () => {
 
   const handlePublishLessonPlan = async () => {
     if (!title || !content) {
-      alert("Title and content are required.");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText(
+        "Titel och innehåll behövs för att spara lektionsplaneringen!"
+      );
+      setAlertModal(true);
+      closeModal();
       return;
     }
 
@@ -95,15 +115,48 @@ export const TextEditor = () => {
       });
 
       if (response.ok) {
-        alert("Lesson plan successfully published to selected students!");
+        closeModal();
+        setSaveModalTitle("Bekräftelse!");
+        setSaveModalText("Din lektionsplanering är skapad!");
+        setAlertModal(true);
       } else {
         const data = await response.json();
-        alert(`Failed to publish lesson plan: ${data.error}`);
+        closeModal();
+        setSaveModalTitle("Något gick fel!");
+        setSaveModalText(
+          "Din lektionsplanering kunde inte skapas, testa igen!"
+        );
+        console.log(data.error);
+        setAlertModal(true);
+        // alert(`Failed to publish lesson plan: ${data.error}`);
       }
     } catch (error) {
       console.error("Error publishing lesson plan:", error);
       alert("Failed to publish lesson plan.");
     }
+  };
+
+  const handleSaveAndPublish = async () => {
+    if (selectedStudents.length === 0) {
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Du måste koppla minst en elev innan du publicerar!");
+      setAlertModal(true);
+      closeModal();
+      return;
+    }
+
+    await handleSaveLessonPlan();
+    await handlePublishLessonPlan();
+    closeModal();
+  };
+
+  const checkContent = () => {
+    if (!title.trim() || !content.trim()) {
+      setHasError(true); // Indikera fel
+      return;
+    }
+    setHasError(false);
+    openModal();
   };
 
   const openModal = () => setIsModalOpen(true);
@@ -129,7 +182,9 @@ export const TextEditor = () => {
             placeholder="Titel på dokumentet"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full mb-4 p-3 border border-gray-300 rounded text-lg"
+            className={`w-full mb-4 p-3 border rounded text-lg ${
+              hasError && !title.trim() ? "border-red-500" : "border-gray-300"
+            }`}
           />
           <ReactQuill
             ref={quillRef}
@@ -137,10 +192,10 @@ export const TextEditor = () => {
             value={content}
             onChange={handleChange}
             placeholder="Skriv din text här..."
-            className="h-[300px] md:h-[500px] bg-white border border-gray-300 rounded shadow-sm"
+            className={`h-[300px] md:h-[500px] bg-white border rounded shadow-sm ${hasError && !content.trim() ? "border-red-500" : "border-gray-300"}`}
           />
           <button
-            onClick={openModal}
+            onClick={checkContent}
             className="mt-16 bg-accent text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-accent-light transition-all duration-300"
           >
             Förhandsgranska & Spara
@@ -203,6 +258,10 @@ export const TextEditor = () => {
               </button>
               <button
                 onClick={() => {
+                  setSaveModalTitle("Spara planering till utkast");
+                  setSaveModalText(
+                    "Planeringen sparas till utkast och kommer inte kopplas till någon elev."
+                  );
                   setIsSaveModalOpen(true);
                 }}
                 className="bg-secondary hover:bg-blue-600 text-white px-4 py-2 rounded mr-2"
@@ -211,9 +270,7 @@ export const TextEditor = () => {
               </button>
               <button
                 onClick={() => {
-                  handleSaveLessonPlan();
-                  handlePublishLessonPlan();
-                  closeModal();
+                  handleSaveAndPublish();
                 }}
                 className="bg-accent text-white px-4 py-2 rounded"
               >
@@ -223,19 +280,23 @@ export const TextEditor = () => {
           </div>
         </div>
       )}
+
+      {/* Modal för varning för sparaknappen */}
       {isSaveModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
             <h3 className="text-xl font-bold mb-4 text-center md:text-left">
-              Spara planering
+              {saveModalTitle}
             </h3>
             <p className="mb-6 text-gray-700 text-center md:text-left">
-              Planeringen sparas till utkast och kommer inte kopplas till någon
-              elev.
+              {saveModalText}
             </p>
             <div className="flex flex-col md:flex-row justify-between gap-4">
               <button
-                onClick={() => setIsSaveModalOpen(false)} // Stäng modalen
+                onClick={() => {
+                  setIsSaveModalOpen(false);
+                  closeModal();
+                }} // Stäng modalen
                 className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded w-full md:w-auto"
               >
                 Avbryt
@@ -244,6 +305,31 @@ export const TextEditor = () => {
                 onClick={() => {
                   setIsSaveModalOpen(false); // Stäng modalen
                   handleSaveLessonPlan(); // Anropa funktionen för att spara
+                  closeModal();
+                }}
+                className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"
+              >
+                Bekräfta
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal för varningar */}
+      {alertModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-100">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
+            <h3 className="text-xl font-bold mb-4 text-center md:text-left">
+              {saveModalTitle}
+            </h3>
+            <p className="mb-6 text-gray-700 text-center md:text-left">
+              {saveModalText}
+            </p>
+            <div className="flex flex-col md:flex-row justify-between gap-4">
+              <button
+                onClick={() => {
+                  setAlertModal(false); // Stäng modalen
                 }}
                 className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"
               >
