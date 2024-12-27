@@ -2,7 +2,7 @@ import studentImg from "../assets/images/teacher.jpg";
 import teacherImg from "../assets/images/student.jpg";
 
 const InfoTeachersStudents = () => (
-  <div className="h-screen w-full flex flex-col justify-start items-center bg-gradient-to-b from-primary to-background px-4 py-14 overflow-y-auto">
+  <div className="h-screen w-full flex flex-col justify-start items-center bg-gradient-to-b from-primary to-background px-4 overflow-y-auto">
     {/* Header */}
     <div className="text-center mb-2 py-10">
       <h2 className="text-3xl md:text-4xl font-bold text-text mt-[-1rem] mb-2">
