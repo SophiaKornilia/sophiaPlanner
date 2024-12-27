@@ -121,6 +121,15 @@ export const Header = () => {
                 <>
                   <li>
                     <NavLink
+                      to="/DashboardTeacher"
+                      className="block w-full text-left"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Hem
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
                       to="/CreateStudentAccount"
                       className="block w-full text-left"
                       onClick={() => setMenuOpen(false)}
@@ -194,7 +203,7 @@ export const Header = () => {
       {user?.role === "teacher" && (
         <div className="hidden sm:flex items-center justify-end px-8 bg-primary h-14">
           <nav>
-            <ul className="flex space-x-8">
+            <ul className="flex space-x-8 text-text">
               <li>
                 <NavLink
                   to={"/CreateStudentAccount"}

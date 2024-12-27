@@ -90,7 +90,7 @@ export const ShowStudentCard = () => {
   }
 
   if (loading) return <p>Loading students...</p>;
-
+ 
   return (
     <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
       <h2 className="text-2xl font-bold text-text mb-4">Mina elever</h2>
