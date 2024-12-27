@@ -48,7 +48,7 @@ export const Header = () => {
           {/* Vänster: Logotyp */}
           <div className="flex items-center space-x-2">
             {/* Klickbar logotyp som navigerar till Home */}
-            <Link to="/" className="flex items-center">
+            <Link to={user ? "#" : "/"} className="flex items-center">
               <img
                 src={logo}
                 alt="SophiaPlanner logotyp"
