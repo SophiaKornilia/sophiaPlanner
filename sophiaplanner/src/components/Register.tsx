@@ -78,96 +78,93 @@ const Register = () => {
   };
 
   return (
-    <>
-      <div className="h-screen w-full flex justify-center flex-start items-center bg-gradient-to-b from-primary to-background px-4 py-4 font-sans overflow-y-scroll">
-        <div className=" flex justify-center items-start bg-gradient-to-b from-primary to-background px-4 py-14 sm:pt-16 font-sans">
-          <div className="w-full max-w-6xl bg-secondary p-6 md:p-8  rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-6">
-            {/* Vänster sektion - Introduktion */}
-            <div className="w-full md:w-1/2 text-center md:text-left px-6 py-4">
-              <h2 className="text-2xl md:text-3xl font-bold text-text mb-4">
-                Registrera dig som lärare
-              </h2>
-              <p className="text-base md:text-lg text-text-light mb-6">
-                Fyll i formuläret för att skapa ett konto och börja planera dina
-                lektioner med SophiaPlanner. Enkelt, smidigt och anpassat för
-                dig!
-              </p>
-            </div>
-
-            {/* Höger sektion - Formulär */}
-            <form className="w-full md:w-1/2 flex flex-col items-center gap-4">
-              {/* Namn */}
-              <div className="w-full">
-                <label className="block text-lg font-semibold text-text mb-2">
-                  Namn:
-                </label>
-                <input
-                  className="w-full p-2 border rounded-md"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              {/* Email */}
-              <div className="w-full">
-                <label className="block text-lg font-semibold text-text mb-2">
-                  Email:
-                </label>
-                <input
-                  ref={emailInputRef}
-                  className="w-full p-2 border rounded-md"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              {/* Lösenord */}
-              <div className="w-full">
-                <label className="block text-lg font-semibold text-text mb-2">
-                  Lösenord (minst 6 karaktärer):
-                </label>
-                <input
-                  className="w-full p-2 border rounded-md"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* Upprepa lösenord */}
-              <div className="w-full">
-                <label className="block text-lg font-semibold text-text mb-2">
-                  Upprepa lösenord:
-                </label>
-                <input
-                  className="w-full p-2 border rounded-md"
-                  type="password"
-                  value={passwordRepeat}
-                  onChange={(e) => setPasswordRepeat(e.target.value)}
-                  required
-                />
-              </div>
-              <button
-                type="button"
-                className="bg-accent text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition duration-300 w-full md:w-auto"
-                onClick={handleClick}
-              >
-                Registrera
-              </button>
-            </form>
-          </div>
+    <div className="h-screen w-full flex justify-center items-center bg-gradient-to-b from-primary to-background px-4 pt-16 sm:pt-20 pb-14 md:py-14 font-sans overflow-y-auto">
+      {/* <div className=" flex justify-center items-start bg-gradient-to-b from-primary to-background px-4 py-14 sm:pt-30 font-sans"> */}
+      <div className="w-full max-w-6xl bg-secondary p-6 md:p-8  rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-6 ">
+        {/* Vänster sektion - Introduktion */}
+        <div className="w-full md:w-1/2 text-center md:text-left px-6 py-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-text mb-4">
+            Registrera dig som lärare
+          </h2>
+          <p className="text-base md:text-lg text-text-light mb-6">
+            Fyll i formuläret för att skapa ett konto och börja planera dina
+            lektioner med SophiaPlanner. Enkelt, smidigt och anpassat för dig!
+          </p>
         </div>
+
+        {/* Höger sektion - Formulär */}
+        <form className="w-full md:w-1/2 flex flex-col items-center gap-4">
+          {/* Namn */}
+          <div className="w-full">
+            <label className="block text-lg font-semibold text-text mb-2">
+              Namn:
+            </label>
+            <input
+              className="w-full p-2 border rounded-md"
+              type="text"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          {/* Email */}
+          <div className="w-full">
+            <label className="block text-lg font-semibold text-text mb-2">
+              Email:
+            </label>
+            <input
+              ref={emailInputRef}
+              className="w-full p-2 border rounded-md"
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          {/* Lösenord */}
+          <div className="w-full">
+            <label className="block text-lg font-semibold text-text mb-2">
+              Lösenord (minst 6 karaktärer):
+            </label>
+            <input
+              className="w-full p-2 border rounded-md"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Upprepa lösenord */}
+          <div className="w-full">
+            <label className="block text-lg font-semibold text-text mb-2">
+              Upprepa lösenord:
+            </label>
+            <input
+              className="w-full p-2 border rounded-md"
+              type="password"
+              value={passwordRepeat}
+              onChange={(e) => setPasswordRepeat(e.target.value)}
+              required
+            />
+          </div>
+          <button
+            type="button"
+            className="bg-accent text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition duration-300 w-full md:w-auto"
+            onClick={handleClick}
+          >
+            Registrera
+          </button>
+        </form>
       </div>
-    </>
+      {/* </div> */}
+    </div>
   );
 };
 
