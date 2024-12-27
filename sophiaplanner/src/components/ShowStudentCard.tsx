@@ -58,9 +58,20 @@ export const ShowStudentCard = () => {
         const data = await response.json();
 
         if (response.ok) {
-          setStudents(data.students);
+          if (data.students && data.students.length === 0) {
+            setStudents([]);
+            setError(null);
+          } else {
+            setStudents(data.students);
+            setError(null);
+          }
         } else {
-          setError(data.error || "Failed to fetch students");
+          console.log("response", response);
+          if (data.message === "No students found for this teacher.") {
+            setStudents([]);
+            setError(null);
+          }
+          setError(data.message || "Failed to fetch students");
         }
       } catch (err) {
         console.error("Fetch students error:", err);
@@ -79,14 +90,15 @@ export const ShowStudentCard = () => {
   }
 
   if (loading) return <p>Loading students...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
       <h2 className="text-2xl font-bold text-text mb-4">Mina elever</h2>
 
       {students.length === 0 ? (
-        <p className="text-center text-text">Inga elever hittades.</p>
+        <p className=" text-text">
+          Inga elever hittades. Lägg till elever för att komma igång!.
+        </p>
       ) : (
         <ul className="overflow-y-auto max-h-[300px] space-y-2">
           {students.map((student) => (

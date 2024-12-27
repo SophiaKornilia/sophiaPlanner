@@ -73,7 +73,6 @@ export const ShowStudents = () => {
 
   // Rendera innehållet
   if (loading) return <p>Loading students...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   const toggleStudentSelection = (studentId: string) => {
     setSelectedStudents((prevSelected) =>
@@ -86,7 +85,7 @@ export const ShowStudents = () => {
   return (
     <div>
       {students.length === 0 ? (
-        <p>No students found.</p>
+        <p>Inga elever hittades. Lägg till elever för att komma igång!.</p>
       ) : (
         <ul>
           {students.map((student) => (
