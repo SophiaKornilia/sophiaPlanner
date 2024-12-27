@@ -20,6 +20,8 @@ export const DraftLessonPlans = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   console.log("userid", user?.id);
+  console.log(error);
+  
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);

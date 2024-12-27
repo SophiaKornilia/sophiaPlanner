@@ -21,6 +21,8 @@ export const TextEditor = () => {
   const [saveModalTitle, setSaveModalTitle] = useState<string>("");
   const [hasError, setHasError] = useState(false);
 
+  console.log(error);
+
   // Hantera textförändringar i Quill
   const handleChange = (value: string) => {
     setContent(value.trim());

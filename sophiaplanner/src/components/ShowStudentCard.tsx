@@ -14,8 +14,7 @@ export const ShowStudentCard = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { selectedStudent, setSelectedStudent, selectedStudents } =
-    useStudentContext();
+  const { selectedStudent, setSelectedStudent } = useStudentContext();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -23,6 +22,8 @@ export const ShowStudentCard = () => {
   const closeModal = () => setIsModalOpen(false);
 
   const teacherId = user?.id;
+  console.log(error);
+
   // Hämta elever från API
   useEffect(() => {
     if (!user) {

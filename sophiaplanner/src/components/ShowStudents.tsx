@@ -16,6 +16,8 @@ export const ShowStudents = () => {
   const { selectedStudents, setSelectedStudents } = useStudentContext();
 
   const teacherId = user?.id;
+  console.log(error);
+  
   // Hämta elever från API
   useEffect(() => {
     if (!user) {
