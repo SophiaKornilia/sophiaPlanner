@@ -72,20 +72,20 @@ const InfoCard = ({ isActive }: { isActive: boolean }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-start bg-gradient-to-b from-primary to-background px-4 py-10 overflow-scroll">
+    <div className="h-screen flex flex-col justify-start bg-gradient-to-b from-primary to-background px-4 py-4 md:px-10 md:py-10 overflow-y-auto">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-text mb-4">
+      <div className="text-center mb-6 md:mb-8">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-text mb-2 md:mb-4">
           Välkommen till SophiaPlanner
         </h1>
-        <p className="text-lg md:text-xl text-text-light">
+        <p className="text-base md:text-xl text-text-light">
           En smart lösning för att planera lektioner och skapa scheman för både
           lärare och elever.
         </p>
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row items-center gap-8 max-w-6xl mx-auto bg-secondary p-10 rounded-xl shadow-lg">
+      <div className="flex flex-col md:flex-row items-center gap-8 w-full mx-auto bg-secondary p-6 md:p-10 rounded-xl shadow-lg">
         {/* Text Section */}
         <div className="md:w-1/2 text-center md:text-left">
           <h2 className="text-3xl md:text-4xl font-bold text-text mb-4">
@@ -109,7 +109,7 @@ const InfoCard = ({ isActive }: { isActive: boolean }) => {
             muted={muted}
             autoPlay
             loop
-            className="w-full rounded-md shadow-md"
+            className="w-full aspect-video rounded-md shadow-md"
             poster={photo}
           >
             Din webbläsare stöder inte video. Prova en annan webbläsare.

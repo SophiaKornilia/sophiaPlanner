@@ -2,7 +2,7 @@ import studentImg from "../assets/images/teacher.jpg";
 import teacherImg from "../assets/images/student.jpg";
 
 const InfoTeachersStudents = () => (
-  <div className="h-[90vh] flex flex-col justify-start items-center bg-gradient-to-b from-primary to-background px-4 py-14 overflow-scroll">
+  <div className="h-screen w-full flex flex-col justify-start items-center bg-gradient-to-b from-primary to-background px-4 py-14 overflow-y-auto">
     {/* Header */}
     <div className="text-center mb-2 py-10">
       <h2 className="text-3xl md:text-4xl font-bold text-text mt-[-1rem] mb-2">
@@ -14,7 +14,7 @@ const InfoTeachersStudents = () => (
     </div>
 
     {/* Content Section */}
-    <div className="flex flex-col md:flex-row items-center gap-4 max-w-6xl mx-auto">
+    <div className="flex flex-col md:flex-row items-center gap-4  mx-auto">
       {/* Teacher Section */}
       <div className="w-full md:w-1/2 bg-secondary p-6 rounded-lg shadow-lg text-center">
         <h3 className="text-2xl font-bold text-text mb-3">För Lärare</h3>
