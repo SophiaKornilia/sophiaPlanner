@@ -78,8 +78,7 @@ const Register = () => {
   };
 
   return (
-    <div className="h-screen w-full flex justify-center items-center bg-gradient-to-b from-primary to-background px-4 pt-16 sm:pt-20 pb-14 md:py-14 font-sans overflow-y-auto">
-      {/* <div className=" flex justify-center items-start bg-gradient-to-b from-primary to-background px-4 py-14 sm:pt-30 font-sans"> */}
+    <div className="h-screen w-full flex justify-center items-center bg-gradient-to-b from-primary to-background px-4 pt-20 sm:pt-12 pb-14 md:py-14 font-sans overflow-y-auto">
       <div className="w-full max-w-6xl bg-secondary p-6 md:p-8  rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-6 ">
         {/* Vänster sektion - Introduktion */}
         <div className="w-full md:w-1/2 text-center md:text-left px-6 py-4">
@@ -163,7 +162,6 @@ const Register = () => {
           </button>
         </form>
       </div>
-      {/* </div> */}
     </div>
   );
 };
