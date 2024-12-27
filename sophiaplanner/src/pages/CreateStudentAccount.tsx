@@ -1,13 +1,24 @@
 // import { useNavigate } from "react-router-dom";
 
-
+import { useContext, useEffect } from "react";
 import { Header } from "../components/Header";
 import { RegisterStudent } from "../components/RegisterStudent";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // interface Group {
 //   groupName: string;
 // }
 const CreateStudentAccount = () => {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  });
+
   // const [groups, setGroups] = useState<Group[]>([]);
 
   // const checkGroups = useCallback(async () => {
@@ -44,7 +55,7 @@ const CreateStudentAccount = () => {
   return (
     <div className="">
       <Header />
-      <RegisterStudent/> 
+      <RegisterStudent />
       {/* {groups.length > 0 ? (
             <div className="mb-4 w-full max-w-xs">
               <label className="mb-2 text-lg font-semibold">Grupp:</label>

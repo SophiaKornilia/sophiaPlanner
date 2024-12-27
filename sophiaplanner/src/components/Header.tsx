@@ -48,7 +48,7 @@ export const Header = () => {
           {/* Vänster: Logotyp */}
           <div className="flex items-center space-x-2">
             {/* Klickbar logotyp som navigerar till Home */}
-            <Link to="/" className="flex items-center">
+            <Link to={user ? "#" : "/"} className="flex items-center">
               <img
                 src={logo}
                 alt="SophiaPlanner logotyp"
@@ -119,6 +119,15 @@ export const Header = () => {
               user.role === "teacher" ? (
                 // Lärare-meny
                 <>
+                  <li>
+                    <NavLink
+                      to="/DashboardTeacher"
+                      className="block w-full text-left"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Hem
+                    </NavLink>
+                  </li>
                   <li>
                     <NavLink
                       to="/CreateStudentAccount"
@@ -194,7 +203,7 @@ export const Header = () => {
       {user?.role === "teacher" && (
         <div className="hidden sm:flex items-center justify-end px-8 bg-primary h-14">
           <nav>
-            <ul className="flex space-x-8">
+            <ul className="flex space-x-8 text-text">
               <li>
                 <NavLink
                   to={"/CreateStudentAccount"}

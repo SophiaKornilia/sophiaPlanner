@@ -14,8 +14,7 @@ export const ShowStudentCard = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { selectedStudent, setSelectedStudent, selectedStudents } =
-    useStudentContext();
+  const { selectedStudent, setSelectedStudent } = useStudentContext();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -23,6 +22,8 @@ export const ShowStudentCard = () => {
   const closeModal = () => setIsModalOpen(false);
 
   const teacherId = user?.id;
+  console.log(error);
+
   // Hämta elever från API
   useEffect(() => {
     if (!user) {
@@ -58,9 +59,20 @@ export const ShowStudentCard = () => {
         const data = await response.json();
 
         if (response.ok) {
-          setStudents(data.students);
+          if (data.students && data.students.length === 0) {
+            setStudents([]);
+            setError(null);
+          } else {
+            setStudents(data.students);
+            setError(null);
+          }
         } else {
-          setError(data.error || "Failed to fetch students");
+          console.log("response", response);
+          if (data.message === "No students found for this teacher.") {
+            setStudents([]);
+            setError(null);
+          }
+          setError(data.message || "Failed to fetch students");
         }
       } catch (err) {
         console.error("Fetch students error:", err);
@@ -79,24 +91,21 @@ export const ShowStudentCard = () => {
   }
 
   if (loading) return <p>Loading students...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
       <h2 className="text-2xl font-bold text-text mb-4">Mina elever</h2>
 
       {students.length === 0 ? (
-        <p className="text-center text-text">Inga elever hittades.</p>
+        <p className=" text-text">
+          Inga elever hittades. Lägg till elever för att komma igång!.
+        </p>
       ) : (
         <ul className="overflow-y-auto max-h-[300px] space-y-2">
           {students.map((student) => (
             <li
               key={student.id}
-              className={`bg-primary text-white p-4 rounded-md shadow hover:bg-opacity-90 transition duration-300 cursor-pointer font-bold ${
-                selectedStudents.includes(student.id)
-                  ? "bg-primary text-white font-semibold"
-                  : "bg-primary text-text hover:bg-accent hover:text-white"
-              }`}
+              className={`bg-primary text-white p-4 rounded-md shadow hover:bg-opacity-90 transition duration-300 cursor-pointer font-bold hover:bg-accent`}
               onClick={() => {
                 setSelectedStudent(student);
                 openModal();
