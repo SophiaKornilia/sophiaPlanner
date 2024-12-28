@@ -10,6 +10,7 @@ export const Header = () => {
   const [showRegister, setShowRegister] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
+  
 
   const isLargeHeader =
     !user ||
@@ -252,7 +253,7 @@ export const Header = () => {
       {/* Visa Register-komponenten */}
       {showRegister && (
         <div className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-auto">
-          <Register />
+          <Register setShowRegister={setShowRegister} />
           <button
             className="absolute top-4 right-4 bg-primary text-white px-4 py-2 rounded-md"
             onClick={() => setShowRegister(false)}

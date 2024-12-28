@@ -1,49 +1,83 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/vercel-config";
+
+interface RegisterProps {
+  setShowRegister?: (value: boolean) => void;
+}
 interface teacher {
   name: string;
   email: string;
   password: string;
   role: string;
+  gdpr: boolean;
 }
-const Register = () => {
+const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
   const emailInputRef = useRef<HTMLInputElement | null>(null);
   const [formData, setFormData] = useState<teacher>({
     name: "",
     email: "",
     password: "",
     role: "teacher",
+    gdpr: false,
   });
 
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
   const navigate = useNavigate();
+  const [alertModal, setAlertModal] = useState(false);
+  const [saveModalText, setSaveModalText] = useState<string>("");
+  const [saveModalTitle, setSaveModalTitle] = useState<string>("");
+  const [success, setSuccess] = useState(false);
 
   const handleClick = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name) {
-      alert("Namnfälter får inte var tomt");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Namnfälter får inte var tomt");
+      setAlertModal(true);
+      // alert("Namnfälter får inte var tomt");
       return;
     }
     if (!formData.email) {
-      alert("Email får inte var tomt");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Du måste fylla i email.");
+      setAlertModal(true);
+      // alert("Email får inte var tomt");
       return;
     }
 
     if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
-      alert("Ange en giltig e-postadress!");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Ange en giltig e-postadress!");
+      setAlertModal(true);
+      // alert("Ange en giltig e-postadress!");
       return;
     }
 
     if (password.length < 6) {
-      alert("Lösenordet måste vara minst 6 karaktärer");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Lösenordet måste vara minst 6 karaktärer");
+      setAlertModal(true);
+      // alert("Lösenordet måste vara minst 6 karaktärer");
       return;
     }
 
     if (password !== passwordRepeat) {
-      alert("Lösenorden är inte samma!");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Lösenorden är inte lika!");
+      setAlertModal(true);
+      // alert("Lösenorden är inte lika!");
+      return;
+    }
+
+    if (!formData.gdpr) {
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText(
+        "Du måste godkänna vår integritetspolicy för att fortsätta."
+      );
+      setAlertModal(true);
       return;
     }
 
@@ -62,19 +96,36 @@ const Register = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("User registered successfully:", data);
-        alert("Registreringen lyckades, du omdirigeras nu till login sidan!");
+        setSuccess(true);
+        setSaveModalTitle("Yaay!");
+        setSaveModalText(
+          "Registreringen lyckades, du omdirigeras nu till login sidan!"
+        );
+        setAlertModal(true);
+        // alert("Registreringen lyckades, du omdirigeras nu till login sidan!");
 
-        navigate("/LoginPage");
+        // navigate("/LoginPage");
       } else {
         const error = await response.json();
-        if (error.message === "Email already exists") {
-          alert("E-postadressen är redan registrerad!");
+        if (error.message === "User already exists") {
+          setSaveModalTitle("Ojdå!");
+          setSaveModalText("E-postadressen är redan registrerad!");
+          setAlertModal(true);
+          // alert("E-postadressen är redan registrerad!");
         }
       }
     } catch (error) {
       console.error("Network error:", error);
-      alert("Ett nätverksfel inträffade!");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Ett nätverksfel inträffade!");
+      setAlertModal(true);
+      // alert("Ett nätverksfel inträffade!");
     }
+  };
+
+  const handleNavigation = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    window.open("/PrivacyPolicy", "_blank");
   };
 
   return (
@@ -153,6 +204,29 @@ const Register = () => {
               required
             />
           </div>
+          <div>
+            <label>
+              <input
+                type="checkbox"
+                checked={formData.gdpr}
+                onChange={
+                  (e) => setFormData({ ...formData, gdpr: e.target.checked }) // Uppdatera formData.gdpr
+                }
+                required
+                className="text-text"
+              />
+              &nbsp;Jag godkänner att mina personuppgifter behandlas i enlighet
+              med vår&nbsp;
+              <a
+                onClick={handleNavigation}
+                target="_blank"
+                className="font-bold cursor-pointer"
+              >
+                integritetspolicy
+              </a>
+              .
+            </label>
+          </div>
           <button
             type="button"
             className="bg-accent text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition duration-300 w-full md:w-auto"
@@ -162,6 +236,34 @@ const Register = () => {
           </button>
         </form>
       </div>
+      {alertModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
+            <h3 className="text-xl font-bold mb-4 text-center md:text-left">
+              {saveModalTitle}
+            </h3>
+            <p className="mb-6 text-gray-700 text-center md:text-left">
+              {saveModalText}
+            </p>
+            <div className="flex flex-col md:flex-row justify-between gap-4">
+              <button
+                onClick={() => {
+                  setAlertModal(false); // Stäng modalen
+                  if (success) {
+                    if (setShowRegister) {
+                      setShowRegister(false); // Döljer registreringsrutan
+                    } // Döljer registreringsrutan
+                    navigate("/LoginPage"); // Navigerar till inloggningssidan
+                  }
+                }}
+                className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

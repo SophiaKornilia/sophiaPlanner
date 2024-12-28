@@ -17,6 +17,9 @@ export const RegisterStudent = () => {
 
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
+  const [saveModalText, setSaveModalText] = useState<string>("");
+  const [saveModalTitle, setSaveModalTitle] = useState<string>("");
+  const [alertModal, setAlertModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -38,21 +41,33 @@ export const RegisterStudent = () => {
     e.preventDefault();
 
     if (!formData.name) {
-      alert("Namnfälter får inte var tomt");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Namnfälter får inte var tomt");
+      setAlertModal(true);
+      // alert("Namnfälter får inte var tomt");
       return;
     }
     if (!formData.userName) {
-      alert("Användarnamnet får inte var tomt");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Användarnamnet får inte var tomt");
+      setAlertModal(true);
+      // alert("Användarnamnet får inte var tomt");
       return;
     }
 
     if (password.length < 6) {
-      alert("Lösenordet måste vara minst 6 karaktärer");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Lösenordet måste vara minst 6 karaktärer");
+      setAlertModal(true);
+      // alert("Lösenordet måste vara minst 6 karaktärer");
       return;
     }
 
     if (password !== passwordRepeat) {
-      alert("Lösenorden är inte samma!");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Lösenorden är inte samma!");
+      setAlertModal(true);
+      // alert("Lösenorden är inte samma!");
       return;
     }
 
@@ -72,7 +87,10 @@ export const RegisterStudent = () => {
       });
 
       if (response.status === 401) {
-        alert("Du måste logga in för att ha tillgång!");
+        setSaveModalTitle("Ojdå!");
+        setSaveModalText("Du måste logga in för att ha tillgång!");
+        setAlertModal(true);
+        // alert("Du måste logga in för att ha tillgång!");
         navigate("/loginPage"); // Navigera till inloggningssidan
         return;
       }
@@ -80,17 +98,28 @@ export const RegisterStudent = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("Student registered successfully:", data);
-        alert("Registreringen lyckades, du omdirigeras nu till mina sidor!");
+        setSaveModalTitle("Yaay!");
+        setSaveModalText(
+          "Registreringen lyckades, du omdirigeras nu till mina sidor!"
+        );
+        setAlertModal(true);
+        // alert("Registreringen lyckades, du omdirigeras nu till mina sidor!");
         navigate("/DashboardTeacher");
       } else {
         const error = await response.json();
         if (error.message === "Student username already exists") {
-          alert("Användarnamnet är redan registrerad!");
+          setSaveModalTitle("Yaay!");
+          setSaveModalText("nvändarnamnet är redan registrerad!");
+          setAlertModal(true);
+          // alert("Användarnamnet är redan registrerad!");
         }
       }
     } catch (error) {
       console.error("Network error:", error);
-      alert("Ett nätverksfel inträffade!");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Ett nätverksfel inträffade!");
+      setAlertModal(true);
+      // alert("Ett nätverksfel inträffade!");
     }
   };
 
@@ -173,6 +202,28 @@ export const RegisterStudent = () => {
           </button>
         </form>
       </div>
+      {alertModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
+            <h3 className="text-xl font-bold mb-4 text-center md:text-left">
+              {saveModalTitle}
+            </h3>
+            <p className="mb-6 text-gray-700 text-center md:text-left">
+              {saveModalText}
+            </p>
+            <div className="flex flex-col md:flex-row justify-between gap-4">
+              <button
+                onClick={() => {
+                  setAlertModal(false); // Stäng modalen
+                }}
+                className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
