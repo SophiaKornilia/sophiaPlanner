@@ -1,6 +1,10 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/vercel-config";
+
+interface RegisterProps {
+  setShowRegister: (value: boolean) => void;
+}
 interface teacher {
   name: string;
   email: string;
@@ -8,7 +12,7 @@ interface teacher {
   role: string;
   gdpr: boolean;
 }
-const Register = () => {
+const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
   const emailInputRef = useRef<HTMLInputElement | null>(null);
   const [formData, setFormData] = useState<teacher>({
     name: "",
@@ -244,9 +248,10 @@ const Register = () => {
             <div className="flex flex-col md:flex-row justify-between gap-4">
               <button
                 onClick={() => {
-                  setAlertModal(false);
-                  {
-                    success && navigate("/LoginPage");
+                  setAlertModal(false); // Stäng modalen
+                  if (success) {
+                    setShowRegister(false); // Döljer registreringsrutan
+                    navigate("/LoginPage"); // Navigerar till inloggningssidan
                   }
                 }}
                 className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"
