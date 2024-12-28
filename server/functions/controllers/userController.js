@@ -57,10 +57,17 @@ exports.registerUser = async (req, res) => {
       }
     }
   } catch (error) {
-    console.error("Error registering user", error);
-    res
-      .status(500)
-      .json({ message: "Failed to register user", error: error.message });
+    if (error.code === "auth/email-already-exists") {
+      console.error("User already exists", error);
+      res
+        .status(400)
+        .json({ message: "User already exists", error: error.message });
+    } else {
+      console.error("Error registering user", error);
+      res
+        .status(500)
+        .json({ message: "Failed to register user", error: error.message });
+    }
   }
 };
 
