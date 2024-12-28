@@ -7,7 +7,7 @@ const { strict } = require("assert");
 // registrera användare/teachers
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, gdpr } = req.body;
     console.log("Request body:", req.body);
 
     const validRoles = ["teacher"];
@@ -16,7 +16,7 @@ exports.registerUser = async (req, res) => {
     }
 
     // Kontrollera obligatoriska fält baserat på rollen
-    if (role === "teacher" && (!name || !email || !password)) {
+    if (role === "teacher" && (!name || !email || !password || gdpr !== true)) {
       return res
         .status(400)
         .json({ message: "Missing required fields for teacher" });
@@ -40,6 +40,7 @@ exports.registerUser = async (req, res) => {
         await userDocRef.set({
           name,
           role,
+          gdpr,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
