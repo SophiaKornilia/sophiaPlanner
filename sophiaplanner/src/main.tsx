@@ -15,7 +15,6 @@ import { AuthProvider } from "./context/AuthContext";
 import { StudentProvider } from "./context/StudentContext";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Register from "./components/Register";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 
 const router = createBrowserRouter([
@@ -52,10 +51,6 @@ const router = createBrowserRouter([
     path: "/LoginPage",
     element: <LoginPage />,
   },
-  // {
-  //   path: "/Register",
-  //   element: <Register />,
-  // },
   {
     path: "/PrivacyPolicy",
     element: <PrivacyPolicy />,

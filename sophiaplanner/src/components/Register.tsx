@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/vercel-config";
 
 interface RegisterProps {
-  setShowRegister: (value: boolean) => void;
+  setShowRegister?: (value: boolean) => void;
 }
 interface teacher {
   name: string;
@@ -250,7 +250,9 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
                 onClick={() => {
                   setAlertModal(false); // Stäng modalen
                   if (success) {
-                    setShowRegister(false); // Döljer registreringsrutan
+                    if (setShowRegister) {
+                      setShowRegister(false); // Döljer registreringsrutan
+                    } // Döljer registreringsrutan
                     navigate("/LoginPage"); // Navigerar till inloggningssidan
                   }
                 }}
