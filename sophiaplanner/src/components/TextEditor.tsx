@@ -268,7 +268,7 @@ export const TextEditor = () => {
                 }}
                 className="bg-secondary hover:bg-blue-600 text-white px-4 py-2 rounded mr-2"
               >
-                Spara
+                Spara till utkast
               </button>
               <button
                 onClick={() => {
