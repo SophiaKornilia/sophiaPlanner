@@ -705,7 +705,7 @@ exports.getStudentLessonPlans = async (req, res) => {
   try {
     const lessonPlansRef = db
       .collection("studentLessonPlans")
-      .where("studentId", "==", "student20");
+      .where("studentId", "==", uid);
     const snapshot = await lessonPlansRef.get();
     console.log("Snapshot size:", snapshot.size);
 

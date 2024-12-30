@@ -25,8 +25,8 @@ export const StudentLessonPlans = () => {
       setLoading(false);
       return;
     }
-
-    // Funktion för att hämta lektionsplaner med async/await och try/catch
+//mattias5
+    // Funktion för att hämta lektionsplaner 
     const fetchLessonPlans = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/getStudentLessonPlans`, {
@@ -50,7 +50,8 @@ export const StudentLessonPlans = () => {
       }
     };
 
-    // Skapar en RxJs Observable som triggar var 10:e sekund
+    //mattias4
+    // Skapar en RxJs Observable som triggar var 10:e sekund 
     const subscription = interval(10000) // Uppdatering var 10:e sekund
       .pipe(
         switchMap(() => from(fetchLessonPlans())) // Anropar API:t och returnerar en Observable

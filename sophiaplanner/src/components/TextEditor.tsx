@@ -6,6 +6,7 @@ import API_BASE_URL from "../../config/vercel-config";
 import { ShowStudents } from "./ShowStudents";
 import { useStudentContext } from "../context/StudentContext";
 
+//mattias1
 export const TextEditor = () => {
   const [content, setContent] = useState<string>(""); // Textinnehållet
   const [title, setTitle] = useState<string>(""); // Titel
@@ -408,7 +409,7 @@ export const TextEditor = () => {
           </div>
         </div>
       )}
-
+{/*mattias2*/}
       {/* Modal för varningar */}
       {alertModal && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-100">
