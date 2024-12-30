@@ -369,6 +369,17 @@ exports.createLessonplan = async (req, res) => {
 
   const db = admin.firestore();
   const lessonRef = db.collection("lessonplans");
+
+  // const existingLessonQuery = await lessonRef
+  //   .where("title", "==", title)
+  //   .where("authorId", "==", userId)
+  //   .get();
+
+  // if (!existingLessonQuery.empty) {
+  //   return res.status(409).json({
+  //     error: "A lessonplan with the same title already exists for this user.",
+  //   });
+  // }
   try {
     const newLesson = await lessonRef.add({
       title: title,
@@ -380,7 +391,7 @@ exports.createLessonplan = async (req, res) => {
 
     res.status(201).json({
       message: "Lesson plan created successfully",
-      lessonId: newLesson.id, // Skickar tillbaka det genererade ID:t
+      lessonId: newLesson.id, userId // Skickar tillbaka det genererade ID:t och userId
     });
   } catch (error) {
     console.error("Error creating lesson plan:", error);
@@ -437,6 +448,126 @@ exports.createStudentLessonplan = async (req, res) => {
     res.status(500).json({ error: "Failed to create student lesson plans" });
   }
 };
+
+//Create lessonplan draft
+exports.createLessonplanDraft = async (req, res) => {
+  const { title, content, userId } = req.body;
+
+  if (!title || !content || !userId) {
+    return res
+      .status(400)
+      .json({ error: "Title, content and userId are required" });
+  }
+
+  const db = admin.firestore();
+  const lessonRef = db.collection("lessonplansDraft");
+
+  try {
+    //kolla om det redan finns en likadan lessonplan
+    const existingDraftQuery = await lessonRef
+      .where("title", "==", title)
+      .where("authorId", "==", userId)
+      .get();
+
+    if (!existingDraftQuery.empty) {
+      return res.status(409).json({
+        error: "A draft with the same title already exists for this user.",
+      });
+    }
+
+    //Skapa ny lessonplanDraft
+    const newLesson = await lessonRef.add({
+      title: title,
+      content: content,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      authorId: userId,
+    });
+
+    res.status(201).json({
+      message: "Draft for lesson plan was created successfully",
+      lessonId: newLesson.id, // Skickar tillbaka det genererade ID:t
+    });
+  } catch (error) {
+    console.error("Error creating lesson plan draft:", error);
+    res.status(500).json({ error: "Failed to create draft for lessonplan" });
+  }
+};
+
+exports.createStudentLessonplan = async (req, res) => {
+  const { lessonId, studentIds, authorId } = req.body;
+  console.log("from body", lessonId, studentIds, authorId);
+
+  // Validering av input
+  if (
+    !lessonId ||
+    !authorId ||
+    !Array.isArray(studentIds) ||
+    studentIds.length === 0
+  ) {
+    return res.status(400).json({
+      error: "Lesson ID, authorId and a list of student IDs are required",
+    });
+  }
+  console.log("steg 1");
+  //katodo
+  const db = admin.firestore();
+  const lessonRef = db.collection("lessonplans").doc(lessonId);
+  const studentLessonRef = db.collection("studentLessonPlans");
+  console.log("steg 2");
+  try {
+    console.log("steg 3");
+    // Hämta masterplanen
+    const lessonDoc = await lessonRef.get();
+    if (!lessonDoc.exists) {
+      return res.status(404).json({ error: "Master lesson plan not found" });
+    }
+    console.log("steg 4");
+    const masterPlan = lessonDoc.data();
+    for (const studentId of studentIds) {
+      //kolla om det redan finns en likadan lessonplan
+      const existingPlanQuery = await studentLessonRef
+        .where("title", "==", masterPlan.title)
+        .where("studentId", "==", studentId)
+        .where("teacherId", "==", authorId)
+        .get();
+      console.log("steg 5");
+      if (!existingPlanQuery.empty) {
+        return res.status(409).json({
+          error: `A lesson plan with the title "${masterPlan.title}" already exists for student ID ${studentId}.`,
+        });
+      }
+    }
+    console.log("steg 6");
+    // Skapa kopior för varje student
+    const batch = db.batch();
+
+    studentIds.forEach((studentId) => {
+      const newStudentPlanRef = studentLessonRef.doc(); // Skapar unikt ID
+      batch.set(newStudentPlanRef, {
+        title: masterPlan.title,
+        content: masterPlan.content,
+        studentId: studentId,
+        teacherId: authorId,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+    console.log("steg 7");
+    // Utför batch-operationen
+    await batch.commit();
+    console.log("steg 8");
+    // Skicka framgångssvar
+    res.status(201).json({
+      message: "Student lesson plans created successfully",
+      assignedStudents: studentIds,
+    });
+  } catch (error) {
+    console.error("Error creating student lesson plans:", error);
+    res.status(500).json({ error: "Failed to create student lesson plans" });
+  }
+};
+
 exports.updateLessonplan = async (req, res) => {};
 
 exports.getLessonplan = async (req, res) => {

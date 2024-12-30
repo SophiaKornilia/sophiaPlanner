@@ -20,6 +20,7 @@ export const TextEditor = () => {
   const [saveModalText, setSaveModalText] = useState<string>("");
   const [saveModalTitle, setSaveModalTitle] = useState<string>("");
   const [hasError, setHasError] = useState(false);
+  const [actionToRun, setActionToRun] = useState("");
 
   console.log(error);
 
@@ -28,7 +29,7 @@ export const TextEditor = () => {
     setContent(value.trim());
   };
 
-  //skapa färdiga lektionsplaneringar
+  //skapa färdiga lektionsplaneringar, behöver en titel och ett content som den får från quill
   const createLessonPlan = async (title: string, content: string) => {
     if (!userId) {
       setError("User is not authenticated.");
@@ -51,7 +52,12 @@ export const TextEditor = () => {
       const data = await response.json();
       if (response.ok) {
         setError("Lesson plan created successfully!");
-        return data.lessonId; // Returnerar lessonId till nästa steg
+        return { lessonId: data.lessonId, authorId: data.userId }; // Returnerar lessonId och authorId till nästa steg
+      } else if (response.status === 409) {
+        setSaveModalTitle("Ojdå!");
+        setSaveModalText("Det finns redan en planering med denna titel!");
+        setAlertModal(true);
+        setError(data.error);
       } else {
         setError(`Error: ${data.error}`);
       }
@@ -61,23 +67,110 @@ export const TextEditor = () => {
     }
   };
 
-  //sparar lessonplan om titel finns
-  const handleSaveLessonPlan = () => {
-    if (!title) {
-      console.log("oj ingen titel, öppna modal");
-      // alert("Title are required.");
+  const createLessonPlanDraft = async (title: string, content: string) => {
+    console.log("Saving draft for:", { title, content });
 
-      setSaveModalTitle("Ojdå!");
-      setSaveModalText("Ingen titel!");
-      setAlertModal(true);
-      closeModal();
-      //katodo gör en modal istället för alert, eventellet röd text
+    if (!userId) {
+      setError("User is not authenticated.");
+      //todo navigare to start??
       return;
     }
-    createLessonPlan(title, content);
+
+    const bearerToken = localStorage.getItem("idToken");
+    console.log("bearerToken", bearerToken);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/createLessonplanDraft`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, content, userId }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setError("Lessonplandraft was created successfully!");
+        return data.lessonId; // Returnerar lessonId till nästa steg
+      } else if (response.status === 409) {
+        setSaveModalTitle("Ojdå!");
+        setSaveModalText("Det finns redan ett utkast med denna titel!");
+        setAlertModal(true);
+        setError(data.error);
+      } else {
+        setError(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error creating lesson plan draft:", error);
+      setError("Failed to create lesson plan draft.");
+    }
   };
 
-  const handlePublishLessonPlan = async () => {
+  //ett knapptryck där vi vill skapa lessonplan samt tilldela den till en studnet och göra studentlessonplan
+  const createStudentLessonplan = async (
+    lessonId: string,
+    studentIds: string[],
+    authorId: string
+  ) => {
+    if (selectedStudents.length === 0) {
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Du måste välja elever vid publicering!");
+      setAlertModal(true);
+      // alert("No students selected for publishing.");
+      return;
+    }
+
+    // Skicka varje student till /createStudentLessonplan
+    try {
+      const bearerToken = localStorage.getItem("idToken");
+
+      if (!bearerToken) {
+        setSaveModalTitle("Ojdå!");
+        setSaveModalText("Du måste vara inloggad för att skapa en planering!");
+        setAlertModal(true);
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/createStudentLessonplan`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lessonId,
+          studentIds,
+          authorId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        closeModal();
+        setSaveModalTitle("Bekräftelse!");
+        setSaveModalText("Din lektionsplanering är skapad!");
+        setAlertModal(true);
+        console.log("Student lesson plans created successfully:", data);
+      } else {
+        closeModal();
+        setSaveModalTitle("Något gick fel!");
+        setSaveModalText(
+          data?.error || "Din lektionsplanering kunde inte skapas, testa igen!"
+        );
+        console.error("Error response from server:", data);
+        setAlertModal(true);
+        // alert(`Failed to publish lesson plan: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error publishing lesson plan:", error);
+      setSaveModalTitle("Något gick fel!");
+      setSaveModalText("Ett nätverksfel inträffade, försök igen!");
+      setAlertModal(true);
+    }
+  };
+
+  const handlePublishLessonplan = async () => {
     if (!title || !content) {
       setSaveModalTitle("Ojdå!");
       setSaveModalText(
@@ -88,68 +181,45 @@ export const TextEditor = () => {
       return;
     }
 
-    // Skapa lessonplan först och få dess lessonId
-    const lessonId = await createLessonPlan(title, content);
-
-    if (!lessonId) {
-      alert("Failed to create lesson plan.");
-      return;
-    }
-
-    if (selectedStudents.length === 0) {
-      alert("No students selected for publishing.");
-      return;
-    }
-
-    // Skicka varje student till /createStudentLessonplan
-    try {
-      const bearerToken = localStorage.getItem("idToken");
-      const response = await fetch(`${API_BASE_URL}/createStudentLessonplan`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${bearerToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          lessonId,
-          studentIds: selectedStudents,
-        }),
-      });
-
-      if (response.ok) {
-        closeModal();
-        setSaveModalTitle("Bekräftelse!");
-        setSaveModalText("Din lektionsplanering är skapad!");
-        setAlertModal(true);
-      } else {
-        const data = await response.json();
-        closeModal();
-        setSaveModalTitle("Något gick fel!");
-        setSaveModalText(
-          "Din lektionsplanering kunde inte skapas, testa igen!"
-        );
-        console.log(data.error);
-        setAlertModal(true);
-        // alert(`Failed to publish lesson plan: ${data.error}`);
-      }
-    } catch (error) {
-      console.error("Error publishing lesson plan:", error);
-      alert("Failed to publish lesson plan.");
-    }
-  };
-
-  const handleSaveAndPublish = async () => {
     if (selectedStudents.length === 0) {
       setSaveModalTitle("Ojdå!");
-      setSaveModalText("Du måste koppla minst en elev innan du publicerar!");
+      setSaveModalText("Du måste välja elever vid publicering!");
       setAlertModal(true);
-      closeModal();
       return;
     }
 
-    await handleSaveLessonPlan();
-    await handlePublishLessonPlan();
-    closeModal();
+    try {
+      // Skapa lessonplan först och få dess lessonId
+      const lessonPlanData = await createLessonPlan(title, content);
+
+      if (!lessonPlanData) {
+        setSaveModalTitle("Fel!");
+        setSaveModalText("Lektionsplanen kunde inte skapas.");
+        setAlertModal(true);
+        return;
+      }
+
+      const { lessonId, authorId } = lessonPlanData;
+      await createStudentLessonplan(lessonId, selectedStudents, authorId);
+      console.log(
+        "createStudentLessonplan",
+        lessonId,
+        selectedStudents,
+        authorId
+      );
+
+      setSaveModalTitle("Bekräftelse!");
+      setSaveModalText(
+        "Din lektionsplanering har publicerats och eleverna har tilldelats!"
+      );
+      setAlertModal(true);
+      closeModal();
+    } catch (error) {
+      console.error("Error handling publish lesson plan:", error);
+      setSaveModalTitle("Något gick fel!");
+      setSaveModalText("Ett fel inträffade under publiceringen, försök igen!");
+      setAlertModal(true);
+    }
   };
 
   const checkContent = () => {
@@ -159,6 +229,21 @@ export const TextEditor = () => {
     }
     setHasError(false);
     openModal();
+  };
+
+  const handleConfirmClick = async () => {
+    switch (actionToRun) {
+      case "SaveToDraft":
+        try {
+          await createLessonPlanDraft(title, content);
+        } catch (error) {
+          console.log("couldnt create draft");
+        }
+
+        break;
+      default:
+        console.log("No action to run.");
+    }
   };
 
   const openModal = () => setIsModalOpen(true);
@@ -260,6 +345,9 @@ export const TextEditor = () => {
               </button>
               <button
                 onClick={() => {
+                  console.log("save to draft");
+
+                  setActionToRun("SaveToDraft");
                   setSaveModalTitle("Spara planering till utkast");
                   setSaveModalText(
                     "Planeringen sparas till utkast och kommer inte kopplas till någon elev."
@@ -272,7 +360,7 @@ export const TextEditor = () => {
               </button>
               <button
                 onClick={() => {
-                  handleSaveAndPublish();
+                  handlePublishLessonplan();
                 }}
                 className="bg-accent text-white px-4 py-2 rounded"
               >
@@ -305,8 +393,11 @@ export const TextEditor = () => {
               </button>
               <button
                 onClick={() => {
+                  console.log("bekräfta draft ");
+
+                  handleConfirmClick();
                   setIsSaveModalOpen(false); // Stäng modalen
-                  handleSaveLessonPlan(); // Anropa funktionen för att spara
+                  // handleSaveLessonPlan(); // Anropa funktionen för att spara katodo
                   closeModal();
                 }}
                 className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"

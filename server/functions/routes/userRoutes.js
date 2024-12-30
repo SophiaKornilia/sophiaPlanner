@@ -13,6 +13,7 @@ const {
   verifyStudent,
   verifyTeacher,
   getStudentLessonPlans,
+  createLessonplanDraft
 } = require("../controllers/userController");
 
 const { teacherMiddleware } = require("../middlewares/teacherMiddleware");
@@ -32,6 +33,7 @@ router.post("/verifyStudent", studentMiddleware, verifyStudent);
 router.post("/refreshToken", refreshToken);
 
 router.post("/createLessonplan", teacherMiddleware, createLessonplan);
+router.post("/createLessonplanDraft", teacherMiddleware, createLessonplanDraft);
 router.post(
   "/createStudentLessonplan",
   teacherMiddleware,
