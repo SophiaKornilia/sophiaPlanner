@@ -10,7 +10,6 @@ export const Header = () => {
   const [showRegister, setShowRegister] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
-  
 
   const isLargeHeader =
     !user ||
@@ -189,7 +188,7 @@ export const Header = () => {
                 </li>
                 <li>
                   <button
-                    className="block w-full text-left"
+                    className="block w-full text-left contrast-more:bg-highContrastText"
                     onClick={handleShowRegister}
                   >
                     Registrera
