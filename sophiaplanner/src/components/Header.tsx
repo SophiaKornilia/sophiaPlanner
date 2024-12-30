@@ -84,7 +84,7 @@ export const Header = () => {
             <div className="hidden sm:flex items-center space-x-4">
               {user ? (
                 <button
-                  className="text-white font-medium hover:underline"
+                  className="text-white font-medium hover:underline contrast-more:text-highContrastText"
                   onClick={handleLogoutClick}
                 >
                   Logga ut
@@ -93,13 +93,13 @@ export const Header = () => {
                 <>
                   <Link
                     to="/LoginPage"
-                    className="bg-accent text-white px-4 py-2 rounded-md hover:bg-opacity-80"
+                    className="bg-accent text-white px-4 py-2 rounded-md hover:bg-opacity-80 "
                     onClick={() => setMenuOpen(false)}
                   >
                     Logga in
                   </Link>
                   <button
-                    className="bg-secondary text-white px-4 py-2 rounded-md hover:bg-opacity-80"
+                    className="bg-secondary text-white px-4 py-2 rounded-md hover:bg-opacity-80 contrast-more:text-highContrastText"
                     onClick={handleShowRegister}
                   >
                     Registrera
@@ -188,7 +188,7 @@ export const Header = () => {
                 </li>
                 <li>
                   <button
-                    className="block w-full text-left contrast-more:bg-highContrastText"
+                    className="block w-full text-left contrast-more:text-highContrastText"
                     onClick={handleShowRegister}
                   >
                     Registrera

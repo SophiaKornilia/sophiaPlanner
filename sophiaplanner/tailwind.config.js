@@ -14,7 +14,9 @@ export default {
         highContrastPrimary: "#005f5f",
         highContrastSecondary: "#7d0025",
         highContrastBackground: "#000000",
-        highContrastText: "#35261A",
+        highContrastText: {
+          DEFAULT: "#35261A !important", // Gör så att texten prioriteras
+        },
         highContrastAccent: "#ffcc00",
       },
       fontFamily: {

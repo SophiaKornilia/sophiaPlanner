@@ -89,10 +89,10 @@ export const StudentLessonPlans = () => {
     <div className="p-4">
       {/* Välkomsttext */}
       <div className="bg-secondary text-text p-4 rounded-lg shadow-md mb-6">
-        <h1 className="text-3xl font-bold mb-2 text-center md:text-left">
+        <h1 className="text-3xl font-bold mb-2 text-center  contrast-more:text-highContrastText">
           Välkommen!
         </h1>
-        <p className="text-lg text-text">
+        <p className="text-lg text-text contrast-more:text-highContrastText">
           Här hittar du alla lektionsplaneringar som dina lärare har tilldelat
           dig. Klicka på en planering för att öppna och läsa den. Se till att
           följa instruktionerna i varje planering och fråga din lärare om du har
@@ -101,7 +101,7 @@ export const StudentLessonPlans = () => {
       </div>
 
       {/* Planeringslista */}
-      <h2 className="text-2xl font-bold text-primary mb-4 text-center md:text-left">
+      <h2 className="text-2xl font-bold text-primary mb-4 text-center md:text-left contrast-more:text-highContrastText">
         Dina Planeringar
       </h2>
 
@@ -112,7 +112,7 @@ export const StudentLessonPlans = () => {
           {lessonPlans.map((plan) => (
             <li
               key={plan.id}
-              className="p-4 bg-primary text-white rounded-lg shadow hover:shadow-lg hover:bg-secondary hover:text-black transition-all cursor-pointer"
+              className="p-4 bg-primary text-white rounded-lg shadow hover:shadow-lg hover:bg-secondary hover:text-black transition-all cursor-pointer contrast-more:text-highContrastText"
               onClick={() => openLessonPlan(plan)}
             >
               <h4 className="text-lg font-semibold">{plan.title}</h4>
