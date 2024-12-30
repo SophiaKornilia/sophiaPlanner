@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/userRoutes");
+const { deleteExpiredSessions } = require("./cron/scheduledTask");
 
 admin.initializeApp({
   credential: admin.credential.cert(require("./serviceAccountKey.json")),
@@ -35,6 +36,12 @@ console.log("CORS settings applied");
 
 app.use("/api", userRoutes);
 
+exports.server = functions.https.onRequest(app);
+
+
+
+exports.deleteExpiredSessions = functions.https.onRequest(deleteExpiredSessions);
+
 // Kontrollera om servern körs lokalt eller i Firebase Functions
 // if (!process.env.FUNCTIONS_EMULATOR && process.env.NODE_ENV !== "production") {
 //   const PORT = process.env.PORT || 3000;
@@ -47,4 +54,3 @@ app.use("/api", userRoutes);
 // const apiKey = process.env.MY_FIREBASE_API_KEY_ENV; // Hämta nyckeln från miljövariabeln
 // console.log("Firebase API Key:", apiKey);
 
-exports.server = functions.https.onRequest(app);

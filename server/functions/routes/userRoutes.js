@@ -13,7 +13,7 @@ const {
   verifyStudent,
   verifyTeacher,
   getStudentLessonPlans,
-  createLessonplanDraft
+  createLessonplanDraft,
 } = require("../controllers/userController");
 
 const { teacherMiddleware } = require("../middlewares/teacherMiddleware");
