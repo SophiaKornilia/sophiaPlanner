@@ -6,15 +6,15 @@ import API_BASE_URL from "../../config/vercel-config";
 import { ShowStudents } from "./ShowStudents";
 import { useStudentContext } from "../context/StudentContext";
 
-//mattias1
+
 export const TextEditor = () => {
   const [content, setContent] = useState<string>(""); // Textinnehållet
   const [title, setTitle] = useState<string>(""); // Titel
   const { user } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
   const { selectedStudents } = useStudentContext();
-  const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(false);
-  const [alertModal, setAlertModal] = useState<boolean>(false);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(true);
+  const [alertModal, setAlertModal] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const quillRef = useRef<ReactQuill>(null); // Ref för ReactQuill
   const userId = user?.id;
@@ -374,7 +374,7 @@ export const TextEditor = () => {
 
       {/* Modal för varning för sparaknappen */}
       {isSaveModalOpen && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-20">
           <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
             <h3 className="text-xl font-bold mb-4 text-center md:text-left">
               {saveModalTitle}
@@ -409,10 +409,10 @@ export const TextEditor = () => {
           </div>
         </div>
       )}
-{/*mattias2*/}
+   
       {/* Modal för varningar */}
       {alertModal && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-100">
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
             <h3 className="text-xl font-bold mb-4 text-center md:text-left">
               {saveModalTitle}
