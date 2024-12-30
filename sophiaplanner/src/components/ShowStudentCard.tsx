@@ -105,7 +105,7 @@ export const ShowStudentCard = () => {
           {students.map((student) => (
             <li
               key={student.id}
-              className={`bg-primary text-white p-4 rounded-md shadow hover:bg-opacity-90 transition duration-300 cursor-pointer font-bold hover:bg-accent`}
+              className={`bg-primary text-white p-4 rounded-md shadow hover:bg-opacity-90 transition duration-300 cursor-pointer font-bold hover:bg-accent contrast-more:text-highContrastText`}
               onClick={() => {
                 setSelectedStudent(student);
                 openModal();

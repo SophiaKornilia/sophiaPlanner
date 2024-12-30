@@ -94,7 +94,7 @@ export const DraftLessonPlans = () => {
           {lessonPlans.map((lesson) => (
             <li
               key={lesson.id}
-              className="bg-primary text-white p-4 rounded-md shadow  transition duration-300 cursor-pointer hover:bg-accent"
+              className="bg-primary text-white p-4 rounded-md shadow  transition duration-300 cursor-pointer hover:bg-accent contrast-more:text-highContrastText"
               onClick={() => {
                 setSelectedLessonPlan(lesson);
                 openModal();

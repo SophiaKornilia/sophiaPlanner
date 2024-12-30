@@ -13,8 +13,8 @@ export const TextEditor = () => {
   const { user } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
   const { selectedStudents } = useStudentContext();
-  const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(true);
-  const [alertModal, setAlertModal] = useState<boolean>(true);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(false);
+  const [alertModal, setAlertModal] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const quillRef = useRef<ReactQuill>(null); // Ref för ReactQuill
   const userId = user?.id;
