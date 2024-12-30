@@ -1,5 +1,6 @@
 const cron = require("cron");
 const admin = require("firebase-admin");
+//katodo firebase cloudschedular
 
 const CronJob = cron.CronJob;
 

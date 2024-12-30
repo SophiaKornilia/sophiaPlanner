@@ -22,7 +22,7 @@ export const ShowStudentCard = () => {
   const closeModal = () => setIsModalOpen(false);
 
   const teacherId = user?.id;
-  console.log(error);
+  console.log("error", error);
 
   // Hämta elever från API
   useEffect(() => {
