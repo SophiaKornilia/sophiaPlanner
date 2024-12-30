@@ -6,10 +6,16 @@ export default {
     extend: {
       colors: {
         primary: "#a1dec9",
-        secondary: "#B86B77",
+        secondary: "#d19fa7",
         background: "#FDF4E3",
         text: "#543c29",
         accent: "#5A3723 ",
+        // Högkontrastfärger
+        highContrastPrimary: "#005f5f",
+        highContrastSecondary: "#7d0025",
+        highContrastBackground: "#000000",
+        highContrastText: "#ffffff",
+        highContrastAccent: "#ffcc00",
       },
       fontFamily: {
         sans: ["Parkinsans", "sans-serif"],
