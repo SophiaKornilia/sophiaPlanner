@@ -23,17 +23,26 @@ const Login = () => {
   const navigate = useNavigate();
   const { scheduleTokenRefresh } = useTokenService();
   const { user, setUser } = useContext(AuthContext);
+  const [saveModalText, setSaveModalText] = useState<string>("");
+  const [saveModalTitle, setSaveModalTitle] = useState<string>("");
+  const [alertModal, setAlertModal] = useState<boolean>(false);
 
   // Funktion som hanterar inloggningsförsök
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!loginForm.identification) {
-      alert("Fyll i användarnamn!");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Du måste fylla i användarnamn!");
+      setAlertModal(true);
+
       return;
     }
     if (!loginForm.password) {
-      alert("Lösenords fältet är tomt!");
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText("Du måste fylla i lösenord!");
+      setAlertModal(true);
+
       return;
     }
 
@@ -99,18 +108,26 @@ const Login = () => {
           navigate("/");
         }
       } else if (response.status === 401) {
-        alert("Felaktiga inloggningsuppgifter!");
+        setSaveModalTitle("Ojdå!");
+        setSaveModalText("Felaktiga inloggningsuppgifter!");
+        setAlertModal(true);
       } else if (response.status === 500) {
-        alert("Ett serverfel inträffade. Försök igen senare.");
+        setSaveModalTitle("Ojdå!");
+        setSaveModalText("Ett serverfel inträffade. Försök igen senare.");
+        setAlertModal(true);
       } else {
         const error = await response.json();
-        alert(error.message || "Ett okänt fel inträffade.");
+        setSaveModalTitle("Ojdå!");
+        setSaveModalText(error.message || "Ett okänt fel inträffade.");
+        setAlertModal(true);
       }
     } catch (error) {
       console.error("Nätverksfel:", error);
-      alert(
+      setSaveModalTitle("Ojdå!");
+      setSaveModalText(
         "Kunde inte ansluta till servern. Kontrollera din internetanslutning."
       );
+      setAlertModal(true);
     }
   };
 
@@ -153,6 +170,29 @@ const Login = () => {
           </button>
         </form>
       </div>
+      {/* Modal för varningar */}
+      {alertModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
+            <h3 className="text-xl font-bold mb-4 text-center md:text-left">
+              {saveModalTitle}
+            </h3>
+            <p className="mb-6 text-gray-700 text-center md:text-left">
+              {saveModalText}
+            </p>
+            <div className="flex flex-col md:flex-row justify-between gap-4">
+              <button
+                onClick={() => {
+                  setAlertModal(false);
+                }}
+                className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
