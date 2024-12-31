@@ -4,7 +4,7 @@ const axios = require("axios");
 const crypto = require("crypto");
 const { strict } = require("assert");
 
-// registrera användare/teachers
+// Funktion för att registrera en ny användare (lärare)
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, password, role, gdpr } = req.body;
@@ -15,14 +15,12 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid role" });
     }
 
-    // Kontrollera obligatoriska fält baserat på rollen
     if (role === "teacher" && (!name || !email || !password || gdpr !== true)) {
       return res
         .status(400)
         .json({ message: "Missing required fields for teacher" });
     }
 
-    // Initialisera Firebase Firestore
     const db = admin.firestore();
     let userRecord;
 
@@ -44,7 +42,6 @@ exports.registerUser = async (req, res) => {
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        // Svara på lyckad registrering
         res.status(201).json({
           message: "User registered successfully!",
           uid: userRecord.uid,
@@ -72,9 +69,9 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+// Funktion för att registrera en ny student
 exports.registerStudent = async (req, res) => {
   try {
-    // katodo: (vilket id ska användas? koppla till riktigt teacherId?)
     const { password, userName, name, role, teacherId } = req.body;
     const db = admin.firestore();
     const studentRef = db.collection("students");
@@ -110,8 +107,8 @@ exports.registerStudent = async (req, res) => {
   }
 };
 
+// Funktion för att hantera inloggning för både lärare och studenter
 exports.login = async (req, res) => {
-  //katodo tacherId, how to fetch an connect
   console.log("Start login process");
   const { identification, password } = req.body;
   console.log("Identification", identification);
@@ -145,14 +142,10 @@ exports.login = async (req, res) => {
 
         console.log("Firebase respons data", response.data);
 
-        // Hämta data från Firebase-svaret
         const { idToken, refreshToken, expiresIn } = response.data;
-
-        //Skicka tokens tillbaka till frontend som JSON
 
         console.log("tokens osv", idToken, "refresh", refreshToken);
 
-        //get userinfo from teacher
         const teacherRef = db.collection("users").doc(userRecord.uid);
         const teacherDoc = await teacherRef.get();
 
@@ -160,12 +153,10 @@ exports.login = async (req, res) => {
           const teacher = teacherDoc.data();
           teacherName = teacher.name;
           teacherRole = teacher.role;
-          // identifier = userRecord.email;
 
           console.log("teacherDoc", teacherName, teacherRole);
         }
 
-        // Skicka svaret till frontend
         return res.status(200).json({
           message: "Teacher login successful",
           user: {
@@ -208,10 +199,9 @@ exports.login = async (req, res) => {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Skapa ett sessionId och session
       const sessionId = crypto.randomUUID();
       console.log("Session ID generated:", sessionId);
-      // 1 dag framåt
+
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
       const sessionRef = db.collection("sessions").doc(sessionId);
 
@@ -224,7 +214,6 @@ exports.login = async (req, res) => {
         userAgent: req.headers["user-agent"],
       });
 
-      // Returnera sessionsinformation
       return res.status(200).json({
         message: "Student login successful",
         user: {
@@ -245,15 +234,10 @@ exports.login = async (req, res) => {
   }
 };
 
+// Logout-funktion för både lärare och studenter
 exports.logout = async (req, res) => {
-  //checka vilken roll
-  //if teacher så logga ut med firebase
-  //idToken och uid/userId fås vid inloggning
   const { identification, userId, sessionId } = req.body;
 
-  // if (!userId || !sessionId || !identification) {
-  //   return res.status(400).json({ message: "Missing required fields" });
-  // }
   const db = admin.firestore();
 
   try {
@@ -281,9 +265,6 @@ exports.logout = async (req, res) => {
       );
     }
 
-    //logout Student
-
-    //det ska skickas med från body
     console.log("userName", identification, "sessionid", sessionId);
 
     const sessionRef = db.collection("sessions").doc(sessionId);
@@ -293,7 +274,6 @@ exports.logout = async (req, res) => {
       return res.status(404).json({ message: "Session not found" });
     }
 
-    //kolla om sessionsId är giltigt och aktiv
     const sessionData = sessionDoc.data();
     console.log("Session data:", sessionData);
 
@@ -301,33 +281,24 @@ exports.logout = async (req, res) => {
       return res.status(401).json({ message: "Session expired" });
     }
 
-    //kolla att det är samma student som är inloggad som raderar den
-
-    // Skickas från klienten
     if (sessionData.studentId !== identification) {
       return res.status(403).json({ message: "Unauthorized request" });
     }
 
-    //radera session
     await sessionRef.delete();
     console.log("Session deleted:", sessionId);
-
-    //gör ett cron job som raderar utgångna sessioner baserat på expiresAt katodo - i egen funktion
 
     return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.error("Logout error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
-
-  //om student så logga ut med att döda session och ta bort från databasen.
 };
 
+// Funktion för att uppdatera token med hjälp av refreshToken
 exports.refreshToken = async (req, res) => {
-  //hämta cookies från frontend
   const { refreshToken } = req.body;
 
-  //kollar om token inte finns
   if (!refreshToken) {
     return res.status(401).json({
       message: "RefreshToken missing",
@@ -358,6 +329,8 @@ exports.refreshToken = async (req, res) => {
   }
 };
 
+/** Lektionsplaneringar */
+// Funktion för att skapa en ny lektionsplanering
 exports.createLessonplan = async (req, res) => {
   const { title, content, userId } = req.body;
 
@@ -369,17 +342,6 @@ exports.createLessonplan = async (req, res) => {
 
   const db = admin.firestore();
   const lessonRef = db.collection("lessonplans");
-
-  // const existingLessonQuery = await lessonRef
-  //   .where("title", "==", title)
-  //   .where("authorId", "==", userId)
-  //   .get();
-
-  // if (!existingLessonQuery.empty) {
-  //   return res.status(409).json({
-  //     error: "A lessonplan with the same title already exists for this user.",
-  //   });
-  // }
   try {
     const newLesson = await lessonRef.add({
       title: title,
@@ -391,17 +353,19 @@ exports.createLessonplan = async (req, res) => {
 
     res.status(201).json({
       message: "Lesson plan created successfully",
-      lessonId: newLesson.id, userId // Skickar tillbaka det genererade ID:t och userId
+      lessonId: newLesson.id,
+      userId,
     });
   } catch (error) {
     console.error("Error creating lesson plan:", error);
     res.status(500).json({ error: "Failed to create lesson plan" });
   }
 };
+
+// Funktion för att skapa lektionsplaneringar och koppla till specifika studenter
 exports.createStudentLessonplan = async (req, res) => {
   const { lessonId, studentIds } = req.body;
 
-  // Validering av input
   if (!lessonId || !Array.isArray(studentIds) || studentIds.length === 0) {
     return res
       .status(400)
@@ -412,7 +376,7 @@ exports.createStudentLessonplan = async (req, res) => {
   const lessonRef = db.collection("lessonplans").doc(lessonId);
 
   try {
-    // Hämta masterplanen
+    // Hämta den skapade lektionsplaneringen
     const lessonDoc = await lessonRef.get();
     if (!lessonDoc.exists) {
       return res.status(404).json({ error: "Master lesson plan not found" });
@@ -425,7 +389,7 @@ exports.createStudentLessonplan = async (req, res) => {
     const studentLessonPlansRef = db.collection("studentLessonPlans");
 
     studentIds.forEach((studentId) => {
-      const newStudentPlanRef = studentLessonPlansRef.doc(); // Skapar unikt ID
+      const newStudentPlanRef = studentLessonPlansRef.doc();
       batch.set(newStudentPlanRef, {
         title: masterPlan.title,
         content: masterPlan.content,
@@ -438,7 +402,6 @@ exports.createStudentLessonplan = async (req, res) => {
     // Utför batch-operationen
     await batch.commit();
 
-    // Skicka framgångssvar
     res.status(201).json({
       message: "Student lesson plans created successfully",
       assignedStudents: studentIds,
@@ -449,7 +412,7 @@ exports.createStudentLessonplan = async (req, res) => {
   }
 };
 
-//Create lessonplan draft
+// Funktion för att skapa en utkast till lektionsplanering
 exports.createLessonplanDraft = async (req, res) => {
   const { title, content, userId } = req.body;
 
@@ -486,7 +449,7 @@ exports.createLessonplanDraft = async (req, res) => {
 
     res.status(201).json({
       message: "Draft for lesson plan was created successfully",
-      lessonId: newLesson.id, // Skickar tillbaka det genererade ID:t
+      lessonId: newLesson.id,
     });
   } catch (error) {
     console.error("Error creating lesson plan draft:", error);
@@ -498,7 +461,6 @@ exports.createStudentLessonplan = async (req, res) => {
   const { lessonId, studentIds, authorId } = req.body;
   console.log("from body", lessonId, studentIds, authorId);
 
-  // Validering av input
   if (
     !lessonId ||
     !authorId ||
@@ -509,41 +471,36 @@ exports.createStudentLessonplan = async (req, res) => {
       error: "Lesson ID, authorId and a list of student IDs are required",
     });
   }
-  console.log("steg 1");
-  //katodo
+
   const db = admin.firestore();
   const lessonRef = db.collection("lessonplans").doc(lessonId);
   const studentLessonRef = db.collection("studentLessonPlans");
-  console.log("steg 2");
+
   try {
-    console.log("steg 3");
-    // Hämta masterplanen
     const lessonDoc = await lessonRef.get();
     if (!lessonDoc.exists) {
       return res.status(404).json({ error: "Master lesson plan not found" });
     }
-    console.log("steg 4");
+
     const masterPlan = lessonDoc.data();
     for (const studentId of studentIds) {
-      //kolla om det redan finns en likadan lessonplan
       const existingPlanQuery = await studentLessonRef
         .where("title", "==", masterPlan.title)
         .where("studentId", "==", studentId)
         .where("teacherId", "==", authorId)
         .get();
-      console.log("steg 5");
+
       if (!existingPlanQuery.empty) {
         return res.status(409).json({
           error: `A lesson plan with the title "${masterPlan.title}" already exists for student ID ${studentId}.`,
         });
       }
     }
-    console.log("steg 6");
-    // Skapa kopior för varje student
+
     const batch = db.batch();
 
     studentIds.forEach((studentId) => {
-      const newStudentPlanRef = studentLessonRef.doc(); // Skapar unikt ID
+      const newStudentPlanRef = studentLessonRef.doc();
       batch.set(newStudentPlanRef, {
         title: masterPlan.title,
         content: masterPlan.content,
@@ -557,7 +514,7 @@ exports.createStudentLessonplan = async (req, res) => {
     // Utför batch-operationen
     await batch.commit();
     console.log("steg 8");
-    // Skicka framgångssvar
+
     res.status(201).json({
       message: "Student lesson plans created successfully",
       assignedStudents: studentIds,
@@ -568,8 +525,7 @@ exports.createStudentLessonplan = async (req, res) => {
   }
 };
 
-exports.updateLessonplan = async (req, res) => {};
-
+// Funktion för att hämta en lärarens lektionsplaneringar
 exports.getLessonplan = async (req, res) => {
   const db = admin.firestore();
   const { authorId } = req.query; // Hämta authorId från query-parametern
@@ -602,6 +558,8 @@ exports.getLessonplan = async (req, res) => {
   }
 };
 
+/*Elever*/
+// Funktion för att hämta studenter kopplade till en specifik lärare
 exports.getStudent = async (req, res) => {
   const { teacherId } = req.query;
   db = admin.firestore();
@@ -643,11 +601,12 @@ exports.getStudent = async (req, res) => {
   }
 };
 
+/*Verifiering*/
+// Funktion för att verifiera en lärares identitet och roll
 exports.verifyTeacher = async (req, res) => {
   try {
     const db = admin.firestore();
 
-    // Hämta lärarens data från Firestore
     const teacherRef = db.collection("users").doc(req.user.uid);
     const teacherDoc = await teacherRef.get();
 
@@ -657,25 +616,25 @@ exports.verifyTeacher = async (req, res) => {
 
     const teacherData = teacherDoc.data();
 
-    // Hämta e-post från Firebase Authentication
     const userRecord = await admin.auth().getUser(req.user.uid);
 
     res.status(200).json({
       uid: req.user.uid,
       role: "teacher",
-      name: teacherData.name, // Hämtas från Firestore
-      identification: userRecord.email, // Hämtas från Firebase Authentication
+      name: teacherData.name,
+      identification: userRecord.email,
     });
   } catch (error) {
     console.error("Error verifying teacher:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Funktion för att verifiera en elevs identitet och roll
 exports.verifyStudent = async (req, res) => {
   try {
     const db = admin.firestore();
 
-    // Hämta elevens data från Firestore
     const studentRef = db.collection("students").doc(req.user.uid);
     const studentDoc = await studentRef.get();
 
@@ -697,6 +656,8 @@ exports.verifyStudent = async (req, res) => {
   }
 };
 
+/*Elevplaneringar*/
+// Funktion för att hämta en students lektionsplaneringar
 exports.getStudentLessonPlans = async (req, res) => {
   const { uid } = req.user; // studentId från middleware
   console.log("UID received:", uid);

@@ -12,6 +12,7 @@ interface student {
   group?: string;
 }
 
+// Komponent för att registrera en ny elev
 export const RegisterStudent = () => {
   const { user } = useContext(AuthContext);
 
@@ -23,6 +24,7 @@ export const RegisterStudent = () => {
 
   const navigate = useNavigate();
 
+  // Initialisera formulärdata med lärarens ID från context
   const [formData, setFormData] = useState<student>({
     name: "",
     userName: "",
@@ -31,12 +33,14 @@ export const RegisterStudent = () => {
     teacherId: user?.id || "",
   });
 
+  // Uppdatera teacherId om användaren ändras
   useEffect(() => {
     if (user?.id) {
       setFormData((prev) => ({ ...prev, teacherID: user.id }));
     }
   }, [user?.id]);
 
+  // Funktion för att hantera formulärskick
   const handleClick = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -44,14 +48,14 @@ export const RegisterStudent = () => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Namnfälter får inte var tomt");
       setAlertModal(true);
-      // alert("Namnfälter får inte var tomt");
+
       return;
     }
     if (!formData.userName) {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Användarnamnet får inte var tomt");
       setAlertModal(true);
-      // alert("Användarnamnet får inte var tomt");
+
       return;
     }
 
@@ -59,7 +63,7 @@ export const RegisterStudent = () => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Lösenordet måste vara minst 6 karaktärer");
       setAlertModal(true);
-      // alert("Lösenordet måste vara minst 6 karaktärer");
+
       return;
     }
 
@@ -67,16 +71,19 @@ export const RegisterStudent = () => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Lösenorden är inte samma!");
       setAlertModal(true);
-      // alert("Lösenorden är inte samma!");
+
       return;
     }
 
+    // Uppdatera formulärdata med lösenord
     const updatedFormData = { ...formData, password: password };
 
+    // Hämta token för att autentisera begäran
     const bearerToken = localStorage.getItem("idToken");
     console.log("bearerToken", bearerToken);
 
     try {
+      // Skicka begäran till backend för att registrera studenten
       const response = await fetch(`${API_BASE_URL}/registerStudent`, {
         method: "POST",
         headers: {
@@ -90,7 +97,6 @@ export const RegisterStudent = () => {
         setSaveModalTitle("Ojdå!");
         setSaveModalText("Du måste logga in för att ha tillgång!");
         setAlertModal(true);
-        // alert("Du måste logga in för att ha tillgång!");
         navigate("/loginPage"); // Navigera till inloggningssidan
         return;
       }
@@ -103,7 +109,7 @@ export const RegisterStudent = () => {
           "Registreringen lyckades, du omdirigeras nu till mina sidor!"
         );
         setAlertModal(true);
-        // alert("Registreringen lyckades, du omdirigeras nu till mina sidor!");
+
         navigate("/DashboardTeacher");
       } else {
         const error = await response.json();
@@ -111,7 +117,6 @@ export const RegisterStudent = () => {
           setSaveModalTitle("Yaay!");
           setSaveModalText("nvändarnamnet är redan registrerad!");
           setAlertModal(true);
-          // alert("Användarnamnet är redan registrerad!");
         }
       }
     } catch (error) {
@@ -119,7 +124,6 @@ export const RegisterStudent = () => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Ett nätverksfel inträffade!");
       setAlertModal(true);
-      // alert("Ett nätverksfel inträffade!");
     }
   };
 
@@ -214,7 +218,7 @@ export const RegisterStudent = () => {
             <div className="flex flex-col md:flex-row justify-between gap-4">
               <button
                 onClick={() => {
-                  setAlertModal(false); // Stäng modalen
+                  setAlertModal(false);
                 }}
                 className="bg-accent hover:bg-text text-white px-4 py-2 rounded w-full md:w-auto"
               >
@@ -227,73 +231,3 @@ export const RegisterStudent = () => {
     </div>
   );
 };
-//   return (
-//     <div className="">
-//       <div className="h-screen flex justify-center items-center bg-gradient-to-b from-primary to-background font-sans  ">
-//         <form className="w-full max-w-md bg-secondary p-6 runded-lg shadow-md flex flex-col items-center space-y-4">
-//           <label className="text-lg font-semibold">Registrera en ny elev</label>
-
-//           <div className="mb-4 w-full max-w-xs">
-//             <label className="mb-2 text-lg font-semibold">Namn:</label>
-//             <input
-//               className="p-2 w-full border rounded-md"
-//               type="text"
-//               value={formData.name}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, name: e.target.value })
-//               }
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4 w-full max-w-xs">
-//             <label className="mb-2 text-lg font-semibold">Användarnamn:</label>
-//             <input
-//               className="p-2 w-full border rounded-md"
-//               type="text"
-//               value={formData.userName}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, userName: e.target.value })
-//               }
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4 w-full max-w-xs">
-//             <label className="mb-2 text-lg font-semibold">
-//               Lösenord (minst 6 karaktärer):
-//             </label>
-//             <input
-//               className="p-2 w-full border rounded-md"
-//               type="password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4 w-full max-w-xs">
-//             <label className="mb-2 text-lg font-semibold">
-//               Upprepa lösenord:
-//             </label>
-//             <input
-//               className="p-2 w-full border rounded-md"
-//               type="password"
-//               value={passwordRepeat}
-//               onChange={(e) => setPasswordRepeat(e.target.value)}
-//               required
-//             />
-//           </div>
-
-//           <button
-//             type="button"
-//             className="custom-button hover:bg-opacity-80"
-//             onClick={handleClick}
-//           >
-//             Registrera
-//           </button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };

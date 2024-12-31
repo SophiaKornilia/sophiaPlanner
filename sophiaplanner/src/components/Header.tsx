@@ -11,11 +11,13 @@ export const Header = () => {
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
 
+  // Dynamisk höjd på headern beroende på användarroll och vy
   const isLargeHeader =
     !user ||
     user.role === "student" ||
-    (user.role === "teacher" && isMobileView); // Dynamisk höjd
+    (user.role === "teacher" && isMobileView);
 
+  // Effekt för att uppdatera `isMobileView` vid ändring av skärmstorlek
   useEffect(() => {
     const handleResize = () => {
       setIsMobileView(window.innerWidth < 640);
@@ -27,17 +29,19 @@ export const Header = () => {
     };
   }, []);
 
+  // Hantera utloggning
   const handleLogoutClick = async () => {
     await logout();
     setMenuOpen(false); // Stäng menyn vid utloggning
     navigate("/");
   };
 
+  // Hantera visning av registreringskomponenten
   const handleShowRegister = () => {
     setShowRegister(true); // Visa Register-komponenten
-    setMenuOpen(false); // Stäng menyn
+    setMenuOpen(false);
   };
-
+  
   return (
     <>
       {/* Header */}
@@ -117,7 +121,7 @@ export const Header = () => {
           <ul className="flex flex-col space-y-2 p-4">
             {user ? (
               user.role === "teacher" ? (
-                // Lärare-meny
+                /* Lärarmeny */
                 <>
                   <li>
                     <NavLink
@@ -165,7 +169,7 @@ export const Header = () => {
                   </li>
                 </>
               ) : (
-                //student user
+                /* Meny för elever */
                 <li>
                   <button
                     className="block w-full text-left text-red-600 font-bold"
@@ -199,7 +203,7 @@ export const Header = () => {
           </ul>
         </nav>
       )}
-
+      {/* Meny för lärare */}
       {user?.role === "teacher" && (
         <div className="hidden sm:flex items-center justify-end px-8 bg-primary h-14">
           <nav>
@@ -249,7 +253,7 @@ export const Header = () => {
         </div>
       )}
 
-      {/* Visa Register-komponenten */}
+      {/* Visa registrera-komponenten */}
       {showRegister && (
         <div className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-auto">
           <Register setShowRegister={setShowRegister} />

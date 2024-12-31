@@ -2,9 +2,9 @@ import { Header } from "../components/Header";
 import { useContext, useState } from "react";
 import "../styles/index.css";
 import API_BASE_URL from "../../config/vercel-config";
-// import { scheduleTokenRefresh } from "../utils/tokenUtils";
+
 import { useNavigate } from "react-router-dom";
-// import { AuthContext } from "../context/AuthContext";
+
 import { useTokenService } from "../utils/tokenUtils";
 import { AuthContext } from "../context/AuthContext";
 
@@ -13,16 +13,18 @@ interface loginData {
   password: string;
 }
 
+//Funktion för att logga in lärare eller elev
 const Login = () => {
   const [loginForm, setLoginForm] = useState<loginData>({
     identification: "",
     password: "",
   });
-  // const { setUser, setToken } = useContext(AuthContext);
+
   const navigate = useNavigate();
   const { scheduleTokenRefresh } = useTokenService();
   const { user, setUser } = useContext(AuthContext);
 
+  // Funktion som hanterar inloggningsförsök
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -66,8 +68,8 @@ const Login = () => {
               String(Date.now() + data.expiresIn * 1000)
             );
 
+            // Schemalägger tokenuppdatering
             scheduleTokenRefresh();
-            // setToken(data.accessToken);
             console.log("Token set in context:", data.accessToken);
 
             console.log("Tokens sparade i LocalStorage.");
@@ -82,6 +84,7 @@ const Login = () => {
               id: data.user.userName,
               identification: data.user.userName,
             });
+            // Lagrar session och expiration-tid i localStorage
             localStorage.setItem("sessionId", data.sessionId);
             localStorage.setItem(
               "tokenExpiry",

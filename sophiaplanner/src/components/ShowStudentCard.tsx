@@ -9,6 +9,7 @@ interface Student {
   name: string;
 }
 
+// Komponent för att visa en lista över elever och deras detaljer
 export const ShowStudentCard = () => {
   const { user } = useContext(AuthContext);
   const [students, setStudents] = useState<Student[]>([]);
@@ -21,14 +22,15 @@ export const ShowStudentCard = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  // Hämta lärarens ID från AuthContext
   const teacherId = user?.id;
   console.log("error", error);
 
-  // Hämta elever från API
+  // useEffect för att hämta elever från API
   useEffect(() => {
     if (!user) {
       console.log("User is not authenticated yet.");
-      return; // Vänta tills `user` är satt
+      return; // Vänta tills användarinformation är tillgänglig
     }
 
     if (!teacherId) {
@@ -36,6 +38,7 @@ export const ShowStudentCard = () => {
       setLoading(false);
       return;
     }
+    // Hämta JWT-token för autentisering
     const bearerToken = localStorage.getItem("idToken");
     console.log("bearerToken", bearerToken);
     if (!bearerToken) {
@@ -44,6 +47,7 @@ export const ShowStudentCard = () => {
       return;
     }
 
+    //skicka GET förfrågan till backend för att hämta elever kopplade till läraren
     const fetchStudents = async () => {
       try {
         const response = await fetch(
@@ -85,6 +89,7 @@ export const ShowStudentCard = () => {
     fetchStudents();
   }, [teacherId]);
 
+  // Om användaren inte är inloggad, visa ett meddelande
   if (!user) {
     console.error("User is not authenticated.");
     return <p>Please log in to view this page.</p>;

@@ -10,12 +10,13 @@ interface LessonPlan {
   updatedAt: string;
 }
 
+// Komponent för att visa och hantera elevens lektionsplaner
 export const StudentLessonPlans = () => {
-  const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([]); // Håller alla lektionsplaner
-  const [loading, setLoading] = useState<boolean>(true); // Håller laddningsstatus
-  const [error, setError] = useState<string | null>(null); // Håller eventuella felmeddelanden
+  const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedLessonPlan, setSelectedLessonPlan] =
-    useState<LessonPlan | null>(null); // Håller vald lektionsplan
+    useState<LessonPlan | null>(null);
 
   // Funktion för att hämta lektionsplaner
   const fetchLessonPlans = async () => {
@@ -40,16 +41,16 @@ export const StudentLessonPlans = () => {
       }
 
       const data = await response.json();
-      return data.lessonPlans; // Returnerar planerna
+      return data.lessonPlans;
     } catch (err) {
       console.error("Error fetching lesson plans:", err);
       setError("Något gick fel. Försök igen senare.");
-      return []; // Returnerar tom array vid fel
+      return [];
     }
   };
 
+  // useEffect för att hantera hämtning och uppdatering av lektionsplaner
   useEffect(() => {
-    // Kör den initiala hämtningen direkt
     const loadInitialLessonPlans = async () => {
       const plans = await fetchLessonPlans();
       setLessonPlans(plans);
@@ -73,7 +74,6 @@ export const StudentLessonPlans = () => {
     setSelectedLessonPlan(plan);
   };
 
-  // Funktion för att stänga modalen
   const closeLessonPlan = () => {
     setSelectedLessonPlan(null);
   };
@@ -81,8 +81,9 @@ export const StudentLessonPlans = () => {
   // Renderar laddningsmeddelande om data laddas
   if (loading) return <p>Loading lesson plans...</p>;
 
-  // Renderar felmeddelande om något gått fel
-  if (error) return <p>Error: {error}</p>;
+  // // Renderar felmeddelande om något gått fel
+  // if (error) return <p>Error: {error}</p>;
+  console.log(error);
 
   // Renderar lektionsplanerna
   return (

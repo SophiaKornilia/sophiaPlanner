@@ -8,6 +8,7 @@ interface Student {
   userName: string;
   name: string;
 }
+// Komponent för att visa och hantera elever
 export const ShowStudents = () => {
   const { user } = useContext(AuthContext);
   const [students, setStudents] = useState<Student[]>([]);
@@ -15,14 +16,15 @@ export const ShowStudents = () => {
   const [error, setError] = useState<string | null>(null);
   const { selectedStudents, setSelectedStudents } = useStudentContext();
 
+  // Lärarens ID hämtas från användarkontexten
   const teacherId = user?.id;
   console.log(error);
-  
+
   // Hämta elever från API
   useEffect(() => {
     if (!user) {
       console.log("User is not authenticated yet.");
-      return; // Vänta tills `user` är satt
+      return; // Vänta tills användardata finns
     }
 
     if (!teacherId) {
@@ -30,6 +32,8 @@ export const ShowStudents = () => {
       setLoading(false);
       return;
     }
+
+    // Hämta JWT-token för autentisering
     const bearerToken = localStorage.getItem("idToken");
     console.log("bearerToken", bearerToken);
     if (!bearerToken) {
@@ -38,6 +42,7 @@ export const ShowStudents = () => {
       return;
     }
 
+    //skicka GET förfrågan till backend för att hämta elever kopplade till läraren
     const fetchStudents = async () => {
       try {
         const response = await fetch(
@@ -68,6 +73,7 @@ export const ShowStudents = () => {
     fetchStudents();
   }, [teacherId]);
 
+  // Visa ett meddelande om användaren inte är inloggad
   if (!user) {
     console.error("User is not authenticated.");
     return <p>Please log in to view this page.</p>;
@@ -76,6 +82,7 @@ export const ShowStudents = () => {
   // Rendera innehållet
   if (loading) return <p>Loading students...</p>;
 
+  // Funktion för att välja/avmarkera en elev
   const toggleStudentSelection = (studentId: string) => {
     setSelectedStudents((prevSelected) =>
       prevSelected.includes(studentId)

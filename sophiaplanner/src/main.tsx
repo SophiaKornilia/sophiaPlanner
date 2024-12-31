@@ -7,8 +7,7 @@ import CreateLessonPlan from "./pages/CreateLessonPlan";
 import CreateStudentAccount from "./pages/CreateStudentAccount";
 import DashboardStudent from "./pages/DashboardStudent";
 import DashboardTeacher from "./pages/DashboardTeacher";
-import Planner from "./pages/Planner";
-import HandleAccount from "./pages/HandleAccount";
+
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./context/AuthContext";
@@ -17,6 +16,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 
+// Skapar en routerkonfiguration med olika rutter och deras tillhörande komponenter
 const router = createBrowserRouter([
   {
     path: "/",
@@ -39,14 +39,14 @@ const router = createBrowserRouter([
     path: "/DashboardTeacher",
     element: <DashboardTeacher />,
   },
-  {
-    path: "/Planner",
-    element: <Planner />,
-  },
-  {
-    path: "/HandleAccount",
-    element: <HandleAccount />,
-  },
+  // {
+  //   path: "/Planner",
+  //   element: <Planner />,
+  // },
+  // {
+  //   path: "/HandleAccount",
+  //   element: <HandleAccount />,
+  // },
   {
     path: "/LoginPage",
     element: <LoginPage />,
