@@ -1,6 +1,10 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/vercel-config";
+
+/*Skapar en kontext för autentisering och användarhantering
+ Context används för att dela autentiseringsstatus och användardata över hela applikationen.
+ // Definierar strukturen för vad som finns i AuthContext.
+ */
 
 interface AuthContextProps {
   logout: () => Promise<void>;
@@ -9,6 +13,7 @@ interface AuthContextProps {
   isAuthenticated: boolean;
 }
 
+// Skapar själva kontexten med standardvärden
 export const AuthContext = createContext<AuthContextProps>({
   logout: async () => {},
   user: null,
@@ -16,10 +21,12 @@ export const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: false,
 });
 
+// Används för att specificera att komponenten tar emot ReactNode som barn.
 interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Typdefinition för användarobjektet
 interface user {
   name: string;
   role: string;
@@ -27,18 +34,20 @@ interface user {
   identification: string;
 }
 
+// AuthProvider-komponenten tillhandahåller kontextvärden för barnkomponenter
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<user | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const sessionId = localStorage.getItem("sessionId");
-  const userId = user?.id; // Hämtar id från user-state
+  const userId = user?.id;
   const identification = user?.identification;
-  // const navigate = useNavigate();
 
+  // useEffect används för att kontrollera inloggningsstatus vid första inladdning av komponenten
   useEffect(() => {
     const idToken = localStorage.getItem("idToken");
     const sessionId = localStorage.getItem("sessionId");
 
+    // Verifierar om användaren är inloggad
     const verifyLogin = async () => {
       try {
         let response;
@@ -60,7 +69,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           });
         }
 
-        // Hantera svar från backend
         if (response && response.ok) {
           const data = await response.json();
           console.log("response data", data);
@@ -68,8 +76,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUser({
             id: data.uid,
             role: data.role,
-            name: data.name, // Se till att backend skickar tillbaka detta
-            identification: data.identification, // Se till att backend skickar tillbaka detta
+            name: data.name,
+            identification: data.identification,
           });
 
           console.log("User set in AuthContext:", {
@@ -82,7 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
-          localStorage.clear(); // Rensa om verifiering misslyckas
+          localStorage.clear();
         }
       } catch (error) {
         console.error("Error verifying login:", error);
@@ -93,13 +101,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     verifyLogin();
   }, []);
 
+  // Loggar ut användaren
   const logout = async () => {
     if (!identification) {
       console.error("Identification saknas. Kan inte logga ut.");
       return;
     }
     try {
-      // Anropa serverns logout-endpoint
       const response = await fetch(`${API_BASE_URL}/logout`, {
         method: "POST",
         headers: {
@@ -120,16 +128,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error("Network error during logout:", error);
     }
-    //rensa localStorage
+
     localStorage.clear();
     setUser(null);
 
     console.log("LocalStorage cleared. Logging out...");
-
-    // Navigera tillbaka till inloggningssidan
-    // navigate("/LoginPage");
   };
 
+  // Returnerar AuthContext med aktuella värden
   return (
     <AuthContext.Provider value={{ user, setUser, isAuthenticated, logout }}>
       {children}

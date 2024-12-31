@@ -21,17 +21,18 @@ export const DraftLessonPlans = () => {
 
   console.log("userid", user?.id);
   console.log(error);
-  
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  // Hämtar lektionsplaneringar när användarens ID ändras
   useEffect(() => {
     if (!user) {
       console.log("User is not authenticated yet.");
       return; // Vänta tills `user` är satt
     }
 
+    // Hämtar lektionsplaneringar från backend
     const fetchLessonPlans = async () => {
       const bearerToken = localStorage.getItem("idToken");
 
@@ -70,17 +71,16 @@ export const DraftLessonPlans = () => {
     fetchLessonPlans();
   }, [user?.id]);
 
-  if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error}</p>;
-
-  console.log("selected plan", selectedLessonPlan);
-
+  // Funktion för att formatera datum
   const formatDate = (timestamp: any) => {
     if (timestamp?._seconds) {
-      return new Date(timestamp._seconds * 1000).toLocaleString(); // Om Firebase Timestamp
+      return new Date(timestamp._seconds * 1000).toLocaleString();
     }
-    return timestamp; // Om redan en sträng
+    return timestamp;
   };
+
+  // Rendera laddningsstatus
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
@@ -106,7 +106,6 @@ export const DraftLessonPlans = () => {
         </ul>
       )}
       {/* Modal för elevinformation */}
-      {/* Katodo: lägg till en radera och ändra knapp */}
       {isModalOpen && selectedLessonPlan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-primary rounded-lg p-6 w-full max-w-md mx-4 shadow-lg overflow-y-auto">

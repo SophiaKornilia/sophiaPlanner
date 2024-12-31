@@ -12,6 +12,8 @@ interface teacher {
   role: string;
   gdpr: boolean;
 }
+
+// Registreringskomponent för lärare
 const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
   const emailInputRef = useRef<HTMLInputElement | null>(null);
   const [formData, setFormData] = useState<teacher>({
@@ -30,6 +32,7 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
   const [saveModalTitle, setSaveModalTitle] = useState<string>("");
   const [success, setSuccess] = useState(false);
 
+  // Funktion för att hantera formulärskick
   const handleClick = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -37,14 +40,12 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Namnfälter får inte var tomt");
       setAlertModal(true);
-      // alert("Namnfälter får inte var tomt");
       return;
     }
     if (!formData.email) {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Du måste fylla i email.");
       setAlertModal(true);
-      // alert("Email får inte var tomt");
       return;
     }
 
@@ -52,7 +53,7 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Ange en giltig e-postadress!");
       setAlertModal(true);
-      // alert("Ange en giltig e-postadress!");
+
       return;
     }
 
@@ -60,7 +61,7 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Lösenordet måste vara minst 6 karaktärer");
       setAlertModal(true);
-      // alert("Lösenordet måste vara minst 6 karaktärer");
+
       return;
     }
 
@@ -68,7 +69,7 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Lösenorden är inte lika!");
       setAlertModal(true);
-      // alert("Lösenorden är inte lika!");
+
       return;
     }
 
@@ -81,10 +82,10 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
       return;
     }
 
+    // Skicka data till backend
     const updatedFormData = { ...formData, password: password };
 
     try {
-      // const response = await fetch("http://localhost:3000/api/users/register", {
       const response = await fetch(`${API_BASE_URL}/registerUser`, {
         method: "POST",
         headers: {
@@ -102,16 +103,12 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
           "Registreringen lyckades, du omdirigeras nu till login sidan!"
         );
         setAlertModal(true);
-        // alert("Registreringen lyckades, du omdirigeras nu till login sidan!");
-
-        // navigate("/LoginPage");
       } else {
         const error = await response.json();
         if (error.message === "User already exists") {
           setSaveModalTitle("Ojdå!");
           setSaveModalText("E-postadressen är redan registrerad!");
           setAlertModal(true);
-          // alert("E-postadressen är redan registrerad!");
         }
       }
     } catch (error) {
@@ -119,10 +116,10 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
       setSaveModalTitle("Ojdå!");
       setSaveModalText("Ett nätverksfel inträffade!");
       setAlertModal(true);
-      // alert("Ett nätverksfel inträffade!");
     }
   };
 
+  // Hantera navigering till integritetspolicy
   const handleNavigation = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     window.open("/PrivacyPolicy", "_blank");
@@ -251,7 +248,7 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
                   setAlertModal(false); // Stäng modalen
                   if (success) {
                     if (setShowRegister) {
-                      setShowRegister(false); // Döljer registreringsrutan
+                      setShowRegister(false);
                     } // Döljer registreringsrutan
                     navigate("/LoginPage"); // Navigerar till inloggningssidan
                   }
@@ -269,61 +266,3 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
 };
 
 export default Register;
-
-{
-  /*         
-        <div className=" w-full max-w-6xl bg-secondary p-6 md:p-8 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-6"></div>
-        <form className="w-full max-w-md bg-secondary p-6 runded-lg shadow-md flex flex-col items-center space-y-4">
-          <label className="text-lg font-semibold">
-            Registrera dig som lärare
-          </label>
-          <label className="mb-2 text-lg font-semibold">Namn:</label>
-          <input
-            className="mb-4 p-2 w-full max-w-xs border rounded-md"
-            type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-          ></input>
-          <label className="mb-2 text-lg font-semibold">Email:</label>
-          <input
-            ref={emailInputRef}
-            className="mb-4 p-2 w-full max-w-xs border rounded-md"
-            type="email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            required
-          ></input>
-          <label className="mb-2 text-lg font-semibold">
-            Lösenord(minst 6 karaktärer):
-          </label>
-          <input
-            className="mb-4 p-2 w-full max-w-xs border rounded-md"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          ></input>
-          <label className="mb-2 text-lg font-semibold">
-            Upprepa lösenord:
-          </label>
-          <input
-            className="mb-4 p-2 w-full max-w-xs border rounded-md"
-            type="password"
-            value={passwordRepeat}
-            onChange={(e) => setPasswordRepeat(e.target.value)}
-            required
-          ></input>
-          <button
-            type="button"
-            className="custom-button hover:bg-opacity-80"
-            onClick={handleClick}
-          >
-            Registrera
-          </button>
-        </form>
-      </div>
-    </div> */
-}

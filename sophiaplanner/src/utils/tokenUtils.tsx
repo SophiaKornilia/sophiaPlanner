@@ -2,9 +2,11 @@ import { useContext } from "react";
 import API_BASE_URL from "../../config/vercel-config";
 import { AuthContext } from "../context/AuthContext";
 
+// Custom hook för att hantera token-tjänster (uppdatering och schemaläggning)
 export function useTokenService() {
   const { logout } = useContext(AuthContext);
 
+  // Funktion för att uppdatera idToken
   async function refreshIdToken() {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
@@ -25,14 +27,14 @@ export function useTokenService() {
         const data = await response.json();
         console.log("Token uppdaterades framgångsrikt", data);
 
-        // Spara det nya idToken och refreshToken
+        // Spara det nya idToken, refreshToken och expiration-tid
         localStorage.setItem("idToken", data.idToken);
         localStorage.setItem("refreshToken", data.refreshToken);
         localStorage.setItem(
           "tokenExpiry",
           String(Date.now() + data.expiresIn * 1000)
         );
-
+        // Schemalägg nästa tokenuppdatering
         scheduleTokenRefresh();
       } else {
         console.error("Misslyckades med att uppdatera token.");
@@ -43,7 +45,7 @@ export function useTokenService() {
       logout();
     }
   }
-
+  // Funktion för att schemalägga tokenuppdatering innan den går ut
   function scheduleTokenRefresh() {
     const tokenExpiry = Number(localStorage.getItem("tokenExpiry"));
 
@@ -69,39 +71,3 @@ export function useTokenService() {
 
   return { refreshIdToken, scheduleTokenRefresh };
 }
-
-//katodo - code for using cookies
-// import API_BASE_URL from "../../config/vercel-config";
-
-// // export function scheduleTokenRefresh(expiresIn: number) {
-// export function scheduleTokenRefresh() {
-//   //   const refreshTime = (expiresIn - 300) * 1000; // 5 minuter innan token går ut
-//   const refreshTime = 10 * 1000;
-//   console.log(
-//     `Schemalägger tokenuppdatering om ${refreshTime / 1000} sekunder.`
-//   );
-
-//   setTimeout(async () => {
-//     console.log("Försöker uppdatera token...");
-//     await refreshIdToken();
-//   }, refreshTime);
-// }
-
-// export async function refreshIdToken() {
-//   try {
-//     const response = await fetch(`${API_BASE_URL}/refreshToken`, {
-//       method: "POST",
-//       credentials: "include", // Skickar cookies automatiskt
-//     });
-
-//     if (response.ok) {
-//       console.log("Token uppdaterades framgångsrikt.", response);
-//       const data = await response.json();
-//       console.log("data message", data);
-//     } else {
-//       console.error("Misslyckades med att uppdatera token.");
-//     }
-//   } catch (error) {
-//     console.error("Ett fel uppstod vid tokenuppdatering:", error);
-//   }
-// }

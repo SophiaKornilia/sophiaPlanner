@@ -1,3 +1,4 @@
+// Visar en informationssida om integritetspolicyn för din applikation.
 export const PrivacyPolicy = () => {
   return (
     <div className="p-6 bg-gradient-to-b from-primary to-background">
