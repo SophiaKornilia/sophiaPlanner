@@ -113,9 +113,9 @@ export const RegisterStudent = () => {
         navigate("/DashboardTeacher");
       } else {
         const error = await response.json();
-        if (error.message === "Student username already exists") {
-          setSaveModalTitle("Yaay!");
-          setSaveModalText("nvändarnamnet är redan registrerad!");
+        if (error.message === "Användarnamnet är redan taget") {
+          setSaveModalTitle("Ojdå!");
+          setSaveModalText("Användarnamnet är upptaget!");
           setAlertModal(true);
         }
       }

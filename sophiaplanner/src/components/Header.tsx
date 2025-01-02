@@ -41,7 +41,7 @@ export const Header = () => {
     setShowRegister(true); // Visa Register-komponenten
     setMenuOpen(false);
   };
-  
+
   return (
     <>
       {/* Header */}
@@ -129,7 +129,7 @@ export const Header = () => {
                       className="block w-full text-left"
                       onClick={() => setMenuOpen(false)}
                     >
-                      Hem
+                      Översikt
                     </NavLink>
                   </li>
                   <li>
@@ -245,7 +245,7 @@ export const Header = () => {
                     isActive ? " font-semibold underline" : "hover:underline"
                   }
                 >
-                  Hem
+                  Översikt
                 </NavLink>
               </li>
             </ul>
