@@ -18,7 +18,7 @@ export const DraftLessonPlans = () => {
   const [selectedLessonPlan, setSelectedLessonPlan] =
     useState<LessonPlan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   console.log("userid", user?.id);
   console.log(error);
 
@@ -83,10 +83,32 @@ export const DraftLessonPlans = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
-      <h1 className="text-2xl font-bold text-text mb-4">
-        Mina lektionsplaneringar
-      </h1>
+    <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col  md:max-h-[500px]">
+      <div className="flex items-start gap-2">
+        <h1 className="text-2xl font-bold text-text mb-4">
+          Mina lektionsplaneringar
+        </h1>
+        <div className="relative group ml-2">
+          <button
+            type="button"
+            onClick={() => setIsTooltipVisible(!isTooltipVisible)}
+            className=" mt-2 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-400 rounded-full cursor-pointer "
+          >
+            i
+          </button>
+
+          <div
+            className={`absolute right-0 top-full mt-2 bg-gray-800 text-white text-sm rounded-md px-4 py-2 shadow-lg w-64 text-center ${
+              isTooltipVisible ? "block" : "hidden"
+            } group-hover:block`}
+          >
+            Nedan ser du alla dina planeringar. Du skapar nya planeringar och
+            tilldelar dem till elever under fliken "skapa elevplaneringar".
+            <div className="absolute -top-1 right-4 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+          </div>
+        </div>
+      </div>
+
       {lessonPlans.length === 0 ? (
         <p className="text-text">Inga planeringar hittades.</p>
       ) : (

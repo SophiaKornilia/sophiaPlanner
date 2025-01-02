@@ -291,10 +291,20 @@ export const TextEditor = () => {
         </div>
 
         {/* Höger sektion: Elever */}
+
         <div className="w-full md:w-1/3 bg-white p-4 md:p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">
-            Tilldela elever
-          </h3>
+          <div className="flex items-center mb-4">
+            <h3 className="text-lg font-bold text-gray-800">Tilldela elever</h3>
+            <div className="relative group ml-2">
+              <span className="flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-400 rounded-full cursor-pointer">
+                i
+              </span>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded-md px-4 py-2 shadow-lg w-64 text-center">
+                Här väljer du de elever du vill tilldela planeringen.
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+              </div>
+            </div>
+          </div>
           <div className="max-h-[500px] overflow-y-auto">
             <ShowStudents />
           </div>

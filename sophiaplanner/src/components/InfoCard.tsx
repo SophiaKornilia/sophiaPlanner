@@ -34,9 +34,9 @@ const InfoCard = ({ isActive }: { isActive: boolean }) => {
     <div className="h-screen flex flex-col justify-start bg-gradient-to-b from-primary to-background px-4 py-4 md:px-10 md:py-10 overflow-y-auto">
       {/* Header */}
       <div className="text-center mb-6 md:mb-8">
-        <h1 className="text-3xl md:text-5xl font-extrabold text-text mb-2 md:mb-4">
+        <h2 className="text-3xl md:text-5xl font-extrabold text-text mb-2 md:mb-4">
           Välkommen till SophiaPlanner
-        </h1>
+        </h2>
         <p className="text-base md:text-xl text-text-light">
           En smart lösning för att planera lektioner och skapa scheman för både
           lärare och elever.
@@ -47,16 +47,16 @@ const InfoCard = ({ isActive }: { isActive: boolean }) => {
       <div className="flex flex-col md:flex-row items-center gap-8 w-full mx-auto bg-secondary p-6 md:p-10 rounded-xl shadow-lg">
         {/* Text Section */}
         <div className="md:w-1/2 text-center md:text-left">
-          <h2 className="text-3xl md:text-4xl font-bold text-text mb-4">
-            Planera. Anpassa. Leverera.
-          </h2>
+          <h1 className="text-2xl md:text-3xl font-bold text-text mb-4">
+            Förenkla. Anpassa. Inspirera.
+          </h1>
           <p className="text-base md:text-lg text-text-light mb-6">
             Med SophiaPlanner kan du:
           </p>
           <ul className="list-disc list-inside text-text-light space-y-2">
-            <li>Skapa personliga planer för varje elev.</li>
-            <li>Hålla scheman organiserade och tillgängliga.</li>
-            <li>Optimera din undervisning med smarta verktyg.</li>
+            <li>Skapa personliga planeringar för varje elev.</li>
+            <li>Hålla allt organiserat och alltid tillgängligt.</li>
+            <li>Förbättra din undervisning med innovativa verktyg.</li>
           </ul>
         </div>
 

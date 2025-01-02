@@ -18,7 +18,7 @@ export const ShowStudentCard = () => {
   const { selectedStudent, setSelectedStudent } = useStudentContext();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -98,8 +98,29 @@ export const ShowStudentCard = () => {
   if (loading) return <p>Loading students...</p>;
 
   return (
-    <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col">
-      <h2 className="text-2xl font-bold text-text mb-4">Mina elever</h2>
+    <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col md:max-h-[500px]">
+      <div className="flex items-start gap-2">
+        <h2 className="text-2xl font-bold text-text mb-4">Mina elever</h2>
+        <div className="relative group ml-2">
+          <button
+            type="button"
+            onClick={() => setIsTooltipVisible(!isTooltipVisible)}
+            className=" mt-2 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-400 rounded-full cursor-pointer "
+          >
+            i
+          </button>
+
+          <div
+            className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-gray-800 text-white text-sm rounded-md px-4 py-2 shadow-lg w-64 text-center ${
+              isTooltipVisible ? "block" : "hidden"
+            } group-hover:block`}
+          >
+            Nedan ser du alla dina elever. Du registrerar nya elever under
+            "skapa elevkonto".
+            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+          </div>
+        </div>
+      </div>
 
       {students.length === 0 ? (
         <p className=" text-text">
