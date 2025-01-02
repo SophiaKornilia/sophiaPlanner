@@ -313,7 +313,7 @@ export const TextEditor = () => {
 
       {/* Modal för förhandsgranskning */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center ">
           <div className="bg-white rounded-lg shadow-lg w-4/5 md:w-3/5 p-6 flex flex-col">
             <h2 className="text-2xl font-bold mb-4">
               {title || "Ingen titel angiven"}
@@ -384,7 +384,7 @@ export const TextEditor = () => {
 
       {/* Modal för varning för sparaknappen */}
       {isSaveModalOpen && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-20">
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center ">
           <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6 mx-4 md:mx-0">
             <h3 className="text-xl font-bold mb-4 text-center md:text-left">
               {saveModalTitle}
