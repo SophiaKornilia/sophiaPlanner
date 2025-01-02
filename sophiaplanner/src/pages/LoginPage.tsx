@@ -136,9 +136,22 @@ const Login = () => {
       <Header />
       <div className="h-screen items-start bg-gradient-to-b from-primary to-background font-sans flex justify-center">
         <form className="h-2/4 w-11/12 md:w-1/3 lg:w-1/4 bg-secondary mt-[10%] flex flex-col items-center justify-center p-6 px-4 py-10 rounded-lg shadow-md gap-4">
-          <label className="mb-2 text-lg font-semibold" id="email">
-            Användarnamn/epost:
-          </label>
+          <div className="flex items-center justify-center w-full mb-2">
+            <label className="text-lg font-semibold mr-1" id="email">
+              Användarnamn:
+            </label>
+            {/* i-ikonen med tooltip */}
+            <div className="relative group">
+              <span className="flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-400 rounded-full cursor-pointer">
+                i
+              </span>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded-md px-4 py-2 shadow-lg w-64 text-center">
+                Loggar du in som elev använder du ditt användarnamn. Loggar du
+                in som lärare använder du e-post som användarnamn.
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+              </div>
+            </div>
+          </div>
           <input
             className="mb-4 p-2 w-full md:w-full lg:max-w-xs border rounded-md"
             type="text"

@@ -8,7 +8,7 @@ export default {
         primary: "#a1dec9",
         secondary: "#d19fa7",
         background: "#FDF4E3",
-        text: "#543c29",
+        text: "#291b10",
         accent: "#5A3723 ",
         // Högkontrastfärger
         highContrastPrimary: "#005f5f",

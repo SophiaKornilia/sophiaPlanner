@@ -134,8 +134,9 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
             Registrera dig som lärare
           </h2>
           <p className="text-base md:text-lg text-text-light mb-6">
-            Fyll i formuläret för att skapa ett konto och börja planera dina
-            lektioner med SophiaPlanner. Enkelt, smidigt och anpassat för dig!
+            Fyll i formuläret för att skapa ett konto och låt SophiaPlanner
+            hjälpa dig att göra lektionerna både organiserade och engagerande. <br/><br/><br/>
+            Är du elev behöver du inte registrera dig, du får dina inloggningsuppgifter av din lärare eller någon på skolan. 
           </p>
         </div>
 
@@ -202,7 +203,7 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
             />
           </div>
           <div>
-            <label>
+            <label className="text-text">
               <input
                 type="checkbox"
                 checked={formData.gdpr}
