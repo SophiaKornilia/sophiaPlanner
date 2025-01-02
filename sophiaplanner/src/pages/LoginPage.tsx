@@ -26,7 +26,7 @@ const Login = () => {
   const [saveModalText, setSaveModalText] = useState<string>("");
   const [saveModalTitle, setSaveModalTitle] = useState<string>("");
   const [alertModal, setAlertModal] = useState<boolean>(false);
-
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   // Funktion som hanterar inloggningsförsök
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,16 +142,26 @@ const Login = () => {
             </label>
             {/* i-ikonen med tooltip */}
             <div className="relative group">
-              <span className="flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-400 rounded-full cursor-pointer">
+              <button
+                type="button"
+                className="flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-400 rounded-full cursor-pointer"
+                onClick={() => setIsTooltipVisible(!isTooltipVisible)} // Hantera klick för mobiler
+              >
                 i
-              </span>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-sm rounded-md px-4 py-2 shadow-lg w-64 text-center">
+              </button>
+              {/* Tooltip som visas antingen via klick (mobil) eller hover (dator) */}
+              <div
+                className={`absolute right-0 top-full mt-2 bg-gray-800 text-white text-sm rounded-md px-4 py-2 shadow-lg w-56 text-center ${
+                  isTooltipVisible ? "block" : "hidden"
+                } group-hover:block`}
+              >
                 Loggar du in som elev använder du ditt användarnamn. Loggar du
                 in som lärare använder du e-post som användarnamn.
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+                <div className="absolute -top-1 right-2 w-2 h-2 bg-gray-800 transform rotate-45"></div>
               </div>
             </div>
           </div>
+
           <input
             className="mb-4 p-2 w-full md:w-full lg:max-w-xs border rounded-md"
             type="text"

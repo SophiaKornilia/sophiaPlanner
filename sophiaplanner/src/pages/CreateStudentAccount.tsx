@@ -10,6 +10,7 @@ const CreateStudentAccount = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  //Kolla om användare är inloggad, annars navigera till homepage
   useEffect(() => {
     if (!user) {
       navigate("/");

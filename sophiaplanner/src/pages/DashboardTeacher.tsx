@@ -1,8 +1,20 @@
+import { useContext, useEffect } from "react";
 import { DraftLessonPlans } from "../components/DraftLessonPlans";
 import { Header } from "../components/Header";
 import { ShowStudentCard } from "../components/ShowStudentCard";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const DashboardTeacher = () => {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  //Kolla om användare är inloggad, annars navigera till homepage
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  });
   return (
     <div>
       <Header />
