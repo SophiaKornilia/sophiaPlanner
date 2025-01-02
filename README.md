@@ -55,7 +55,7 @@ Dessa paket krävs för att applikationen ska fungera i både utvecklings- och p
    Kör följande kommandon i din terminal:
    ```bash
    git clone https://github.com/SophiaKornilia/sophiaPlanner.git
-   cd sophiaplanner
+   cd sophia-planner
    ```
 
 `2.` **Installera beroenden:**  
@@ -69,7 +69,7 @@ Dessa paket krävs för att applikationen ska fungera i både utvecklings- och p
 
    **Frontend:**
    ```env
-   VITE_API_BASE_URL=din-server-url
+   VITE_API_BASE_URL=http://localhost:5001/sophiaplanner-123/us-central1
    ```
 
    **Backend:**
@@ -77,22 +77,22 @@ Dessa paket krävs för att applikationen ska fungera i både utvecklings- och p
    FIREBASE_API_KEY=din-firebase-api-key
    ```
 
-`4.` **Starta projektet lokalt:**  
-   Kör följande kommandon för att starta frontend och backend:
+`4.` **Starta Firebase Emulator:**  
+   Kör följande kommando för att starta emulatorn för Firebase Functions:
+   ```bash
+   firebase emulators:start
+   ```
+   Detta startar emulatorn, och du kan se URL:erna för dina lokala funktioner, vanligtvis något som:
+   ```
+   http://localhost:5001/<your-project-id>/us-central1/<function-name>
+   ```
 
-   - **Frontend:**  
-     Gå till frontend-katalogen och kör:
-     ```bash
-     npm run dev
-     ```
-     Detta startar frontend-applikationen på `http://localhost:3000`.
-
-   - **Backend:**  
-     Gå till backend-katalogen och kör:
-     ```bash
-     node server.js
-     ```
-     Detta startar backend-servern på `http://localhost:5000`.
+`5.` **Starta frontend:**  
+   I en ny terminalflik, navigera till frontend-katalogen och kör:
+   ```bash
+   npm run dev
+   ```
+   Detta startar frontend-applikationen på `http://localhost:3000`.
 
 ---
 
@@ -111,6 +111,9 @@ För att projektet ska fungera krävs följande externa tjänster och konton:
 
 - **Vercel (för frontend):**  
   - För att deploya frontend-applikationen. Skapa ett konto på [Vercel](https://vercel.com).
+
+- **GitHub Secrets (valfritt):**  
+  - För produktion bör känsliga variabler som `FIREBASE_API_KEY` lagras säkert i GitHub Secrets eller motsvarande.
 
 ---
 
