@@ -3,7 +3,7 @@ import API_BASE_URL from "../../config/vercel-config";
 
 /*Skapar en kontext för autentisering och användarhantering
  Context används för att dela autentiseringsstatus och användardata över hela applikationen.
- // Definierar strukturen för vad som finns i AuthContext.
+  Definierar strukturen för vad som finns i AuthContext.
  */
 
 interface AuthContextProps {
