@@ -42,6 +42,7 @@ export const ShowStudents = () => {
       return;
     }
 
+   
     //skicka GET förfrågan till backend för att hämta elever kopplade till läraren
     const fetchStudents = async () => {
       try {

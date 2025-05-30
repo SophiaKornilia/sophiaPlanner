@@ -22,7 +22,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { scheduleTokenRefresh } = useTokenService();
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, setIsAuthenticated } = useContext(AuthContext);
   const [saveModalText, setSaveModalText] = useState<string>("");
   const [saveModalTitle, setSaveModalTitle] = useState<string>("");
   const [alertModal, setAlertModal] = useState<boolean>(false);
@@ -76,6 +76,8 @@ const Login = () => {
               "tokenExpiry",
               String(Date.now() + data.expiresIn * 1000)
             );
+
+            setIsAuthenticated(true);
 
             // Schemalägger tokenuppdatering
             scheduleTokenRefresh();

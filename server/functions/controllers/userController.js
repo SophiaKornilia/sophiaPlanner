@@ -238,6 +238,7 @@ exports.login = async (req, res) => {
 exports.logout = async (req, res) => {
   const { identification, userId, sessionId } = req.body;
 
+
   const db = admin.firestore();
 
   try {
