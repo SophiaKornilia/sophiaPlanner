@@ -32,7 +32,6 @@ sitemap.end();
 streamToPromise(sitemap)
   .then((data) => {
     writeFileSync("./public/sitemap.xml", data);
-    console.log("Sitemap skapad!");
   })
   .catch((err) => {
     console.error("Ett fel uppstod:", err);

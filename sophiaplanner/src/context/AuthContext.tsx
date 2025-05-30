@@ -49,8 +49,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const idToken = localStorage.getItem("idToken");
     const sessionId = localStorage.getItem("sessionId");
 
-    console.log("idToken", idToken);
-    console.log("sessionId", sessionId);
+ 
 
     // Verifierar om användaren är inloggad
     const verifyLogin = async () => {
@@ -79,13 +78,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           console.log("response data", data);
 
           setUser({
-            id: data.uid,
-            role: data.role,
-            name: data.name,
-            identification: data.identification,
-          });
-
-          console.log("User set in AuthContext:", {
             id: data.uid,
             role: data.role,
             name: data.name,

@@ -9,7 +9,7 @@ const InfoCard = ({ isActive }: { isActive: boolean }) => {
 
   // useEffect: Spela eller pausa videon beroende på om komponenten är aktiv
   useEffect(() => {
-    console.log("Video Ref:", videoRef.current);
+  
     if (isActive && videoRef.current) {
       console.log("Playing video");
       videoRef.current.play();

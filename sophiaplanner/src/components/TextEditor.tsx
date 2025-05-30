@@ -38,7 +38,7 @@ export const TextEditor = () => {
     }
 
     const bearerToken = localStorage.getItem("idToken");
-    console.log("bearerToken", bearerToken);
+   
 
     try {
       const response = await fetch(`${API_BASE_URL}/createLessonplan`, {
@@ -69,8 +69,7 @@ export const TextEditor = () => {
 
   // Sparar en lektionsplanering som ett utkast.
   const createLessonPlanDraft = async (title: string, content: string) => {
-    console.log("Saving draft for:", { title, content });
-
+  
     if (!userId) {
       setError("User is not authenticated.");
       //katodo navigare to start??
@@ -78,7 +77,7 @@ export const TextEditor = () => {
     }
 
     const bearerToken = localStorage.getItem("idToken");
-    console.log("bearerToken", bearerToken);
+ 
 
     try {
       const response = await fetch(`${API_BASE_URL}/createLessonplanDraft`, {
@@ -200,12 +199,7 @@ export const TextEditor = () => {
 
       const { lessonId, authorId } = lessonPlanData;
       await createStudentLessonplan(lessonId, selectedStudents, authorId);
-      console.log(
-        "createStudentLessonplan",
-        lessonId,
-        selectedStudents,
-        authorId
-      );
+    
 
       setSaveModalTitle("Bekräftelse!");
       setSaveModalText(
@@ -404,7 +398,7 @@ export const TextEditor = () => {
               </button>
               <button
                 onClick={() => {
-                  console.log("bekräfta draft ");
+                  console.log("confirm draft ");
 
                   handleConfirmClick();
                   setIsSaveModalOpen(false);

@@ -8,8 +8,6 @@ const { strict } = require("assert");
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, password, role, gdpr } = req.body;
-    console.log("Request body:", req.body);
-
     const validRoles = ["teacher"];
     if (!validRoles.includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
@@ -129,10 +127,10 @@ exports.login = async (req, res) => {
       if (userRecord) {
         //login as teacher
         const apiKey = process.env.MY_SECRET_FIREBASE_API_KEY;
-        console.log("API Key från Secrets:", apiKey);
+      
 
         const firebaseAuthUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
-        console.log("firebaseAuthUrl", firebaseAuthUrl);
+      
 
         const response = await axios.post(firebaseAuthUrl, {
           email: identification,
@@ -140,11 +138,10 @@ exports.login = async (req, res) => {
           returnSecureToken: true,
         });
 
-        console.log("Firebase respons data", response.data);
-
+       
         const { idToken, refreshToken, expiresIn } = response.data;
 
-        console.log("tokens osv", idToken, "refresh", refreshToken);
+      
 
         const teacherRef = db.collection("users").doc(userRecord.uid);
         const teacherDoc = await teacherRef.get();
@@ -154,7 +151,6 @@ exports.login = async (req, res) => {
           teacherName = teacher.name;
           teacherRole = teacher.role;
 
-          console.log("teacherDoc", teacherName, teacherRole);
         }
 
         return res.status(200).json({
@@ -177,7 +173,6 @@ exports.login = async (req, res) => {
       );
     }
 
-    console.log("The  code is here! ");
 
     //Check if student exists and login
     const studentRef = db.collection("students");
@@ -185,22 +180,21 @@ exports.login = async (req, res) => {
       .where("userName", "==", identification)
       .get();
 
-    console.log("isStudent", isStudent);
 
     if (!isStudent.empty) {
       const student = isStudent.docs[0].data();
-      console.log("student first", student);
+ 
 
       const isPasswordValid = await bcrypt.compare(password, student.password);
 
-      console.log("password", isPasswordValid);
+     
 
       if (!isPasswordValid) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       const sessionId = crypto.randomUUID();
-      console.log("Session ID generated:", sessionId);
+ 
 
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
       const sessionRef = db.collection("sessions").doc(sessionId);
@@ -243,7 +237,7 @@ exports.logout = async (req, res) => {
 
   try {
     try {
-      console.log("second try");
+     
       const userRecord = await admin.auth().getUserByEmail(identification);
 
       if (userRecord) {
@@ -266,7 +260,7 @@ exports.logout = async (req, res) => {
       );
     }
 
-    console.log("userName", identification, "sessionid", sessionId);
+   
 
     const sessionRef = db.collection("sessions").doc(sessionId);
     const sessionDoc = await sessionRef.get();
@@ -276,8 +270,7 @@ exports.logout = async (req, res) => {
     }
 
     const sessionData = sessionDoc.data();
-    console.log("Session data:", sessionData);
-
+  
     if (new Date(sessionData.expiresAt.toDate()) < new Date()) {
       return res.status(401).json({ message: "Session expired" });
     }
@@ -287,7 +280,7 @@ exports.logout = async (req, res) => {
     }
 
     await sessionRef.delete();
-    console.log("Session deleted:", sessionId);
+  
 
     return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
@@ -315,7 +308,7 @@ exports.refreshToken = async (req, res) => {
         refresh_token: refreshToken,
       }
     );
-    console.log("Firebase refresh token response:", response.data);
+   
 
     const { id_token, refresh_token, expires_in } = response.data;
 
@@ -460,7 +453,7 @@ exports.createLessonplanDraft = async (req, res) => {
 
 exports.createStudentLessonplan = async (req, res) => {
   const { lessonId, studentIds, authorId } = req.body;
-  console.log("from body", lessonId, studentIds, authorId);
+
 
   if (
     !lessonId ||
@@ -511,10 +504,10 @@ exports.createStudentLessonplan = async (req, res) => {
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     });
-    console.log("steg 7");
+ 
     // Utför batch-operationen
     await batch.commit();
-    console.log("steg 8");
+ 
 
     res.status(201).json({
       message: "Student lesson plans created successfully",
@@ -579,7 +572,7 @@ exports.getStudent = async (req, res) => {
         .json({ message: "No students found for this teacher." });
     }
 
-    console.log("snapshot", snapshot);
+  
     console.log(
       "Query Result:",
       snapshot.docs.map((doc) => doc.data())
@@ -661,7 +654,7 @@ exports.verifyStudent = async (req, res) => {
 // Funktion för att hämta en students lektionsplaneringar
 exports.getStudentLessonPlans = async (req, res) => {
   const { uid } = req.user; // studentId från middleware
-  console.log("UID received:", uid);
+
   const db = admin.firestore();
 
   try {
@@ -669,7 +662,7 @@ exports.getStudentLessonPlans = async (req, res) => {
       .collection("studentLessonPlans")
       .where("studentId", "==", uid);
     const snapshot = await lessonPlansRef.get();
-    console.log("Snapshot size:", snapshot.size);
+   
 
     if (snapshot.empty) {
       return res.status(200).json({ lessonPlans: [] }); // Inga planeringar

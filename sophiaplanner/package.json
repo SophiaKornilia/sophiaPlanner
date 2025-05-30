@@ -15,6 +15,7 @@
     "context": "^3.0.33",
     "firebase": "^11.0.2",
     "framer-motion": "^11.15.0",
+    "motion": "^12.15.0",
     "quill": "^2.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

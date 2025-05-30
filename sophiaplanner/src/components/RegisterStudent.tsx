@@ -80,8 +80,7 @@ export const RegisterStudent = () => {
 
     // Hämta token för att autentisera begäran
     const bearerToken = localStorage.getItem("idToken");
-    console.log("bearerToken", bearerToken);
-
+ 
     try {
       // Skicka begäran till backend för att registrera studenten
       const response = await fetch(`${API_BASE_URL}/registerStudent`, {

@@ -47,7 +47,7 @@ const Login = () => {
     }
 
     try {
-      console.log("api base url", API_BASE_URL);
+     
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         credentials: "include",
@@ -59,7 +59,7 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("User logedin successfully", data);
+
 
         // Navigera till rätt dashboard
         if (data.teacherRole === "teacher") {
@@ -81,9 +81,6 @@ const Login = () => {
 
             // Schemalägger tokenuppdatering
             scheduleTokenRefresh();
-            console.log("Token set in context:", data.accessToken);
-
-            console.log("Tokens sparade i LocalStorage.");
           }
           navigate("/DashboardTeacher");
           console.log("userlog", user);

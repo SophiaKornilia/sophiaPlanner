@@ -35,7 +35,7 @@ export const ShowStudents = () => {
 
     // Hämta JWT-token för autentisering
     const bearerToken = localStorage.getItem("idToken");
-    console.log("bearerToken", bearerToken);
+
     if (!bearerToken) {
       setError("Authentication token is missing");
       setLoading(false);
