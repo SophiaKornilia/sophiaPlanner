@@ -47,7 +47,6 @@ const Login = () => {
     }
 
     try {
-     
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         credentials: "include",
@@ -59,7 +58,6 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-
 
         // Navigera till rätt dashboard
         if (data.teacherRole === "teacher") {
@@ -86,12 +84,16 @@ const Login = () => {
           console.log("userlog", user);
         } else if (data.user.role === "student") {
           if (data.sessionId) {
-            setUser({
+            const newUser = {
               name: data.user.name,
               role: data.user.role,
               id: data.user.userName,
               identification: data.user.userName,
-            });
+            };
+
+            setUser(newUser);
+            setIsAuthenticated(true);
+
             // Lagrar session och expiration-tid i localStorage
             localStorage.setItem("sessionId", data.sessionId);
             localStorage.setItem(
@@ -100,6 +102,7 @@ const Login = () => {
             );
             console.log("Tokens sparade i LocalStorage.");
           }
+          console.log("token sparas och den ska navigera");
           navigate("/DashboardStudent");
         } else {
           console.log("Ingen roll satt/hittades!");

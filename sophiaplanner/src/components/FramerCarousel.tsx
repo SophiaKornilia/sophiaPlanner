@@ -1,20 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InfoCard from "./InfoCard";
 import InfoTeachersStudents from "./InfoTeacherStudent";
 import Register from "./Register";
 import { AnimatePresence, motion } from "framer-motion";
 
+interface Slide {
+  id: number;
+  content: JSX.Element;
+}
 export const FramerCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const slides = [
-    { id: 1, content: <InfoCard isActive={activeIndex === 0} /> }, // Första sliden med InfoCard-komponenten
+  const slides: Slide[] = [
+    { id: 1, content: <InfoCard /> }, // Första sliden med InfoCard-komponenten
     { id: 2, content: <InfoTeachersStudents /> }, // Andra sliden med InfoTeachersStudents-komponenten
     { id: 3, content: <Register /> }, // Tredje sliden med Register-komponenten
   ];
 
+  useEffect(() => {
+    if (isPaused) return; // gör inget om pausad
+
+    const interval = setInterval(() => {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isPaused, slides.length]);
+
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div
+      className="relative h-full w-full overflow-hidden transition-transform duration-300 hover:scale-[1.03]"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Rendera slides */}
       <AnimatePresence>
         {slides.map(
@@ -22,7 +41,7 @@ export const FramerCarousel = () => {
             index === activeIndex && ( // Visa endast den aktiva sliden
               <motion.div
                 key={slide.id}
-                className="absolute w-full h-full flex items-center justify-center bg-gray-100"
+                className="absolute w-full h-full flex items-center justify-center bg-secondary"
                 initial={{ x: 300 }} // Börjar från höger
                 animate={{ x: 0 }} // Flyttar in till mitten
                 exit={{ x: -300 }} // Försvinner till vänster
@@ -33,23 +52,6 @@ export const FramerCarousel = () => {
             )
         )}
       </AnimatePresence>
-
-      {/* Navigeringsknappar */}
-      <button
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-text bg-opacity-75 text-white p-3 rounded-full shadow-lg hover:bg-opacity-90"
-        onClick={() =>
-          setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length)
-        }
-      >
-        &lt;
-      </button>
-
-      <button
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-text bg-opacity-75 text-white p-3 rounded-full shadow-lg hover:bg-opacity-90"
-        onClick={() => setActiveIndex((prev) => (prev + 1) % slides.length)}
-      >
-        &gt;
-      </button>
     </div>
   );
 };

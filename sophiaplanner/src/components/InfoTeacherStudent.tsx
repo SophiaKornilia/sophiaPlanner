@@ -1,46 +1,34 @@
 import studentImg from "../assets/images/teacher.jpg";
 import teacherImg from "../assets/images/student.jpg";
 
-// Komponent för att visa information om produkten för både lärare och elever
 const InfoTeachersStudents = () => (
-  <div className="h-screen w-full flex flex-col justify-start items-center bg-gradient-to-b from-primary to-background px-4 overflow-y-auto">
-    {/* Header */}
-    <div className="text-center mb-2 py-10">
-      <h2 className="text-3xl md:text-4xl font-bold text-text mt-[-1rem] mb-2">
-        För Lärare och Elever
-      </h2>
-      <p className="text-lg md:text-xl text-text-light">
-        Upptäck hur SophiaPlanner förenklar undervisningen och lärandet.
-      </p>
-    </div>
-
-    {/* Innehållssektionen */}
-    <div className="flex flex-col md:flex-row items-center gap-4  mx-auto">
+  <div className="w-full max-w-5xl mx-auto flex flex-col justify-center items-center bg-secondary px-3 py-3 overflow-y-auto">
+    <div className="flex flex-col md:flex-row items-start gap-2 sm:gap-3 w-full">
       {/* Lärarsektion */}
-      <div className="w-full md:w-1/2 bg-secondary p-6 rounded-lg shadow-lg text-center">
-        <h3 className="text-2xl font-bold text-text mb-3">För Lärare</h3>
-        <p className="text-base md:text-lg text-text-light mb-4">
-          Skapa strukturerade lektionsplaner, hantera scheman och ge dina elever
-          en tydlig vägledning. Perfekt för att organisera din undervisning.
+      <div className="w-full md:w-1/2 bg-secondary p-2 rounded-lg text-center">
+        <h3 className="text-base font-semibold text-text mb-1">För Lärare</h3>
+        <p className="text-xs text-text-light mb-2">
+          Skapa lektionsplaner och hantera scheman enkelt. Få struktur i din
+          undervisning.
         </p>
         <img
           src={teacherImg}
           alt="För Lärare"
-          className="mx-auto max-h-40 rounded-md shadow-md"
+          className="mx-auto max-h-20 rounded shadow-sm"
         />
       </div>
 
       {/* Elevsektion */}
-      <div className="w-full md:w-1/2 bg-secondary p-6 rounded-lg shadow-lg text-center">
-        <h3 className="text-2xl font-bold text-text mb-3">För Elever</h3>
-        <p className="text-base md:text-lg text-text-light mb-4">
-          Få en tydlig översikt över dina lektioner, scheman och framsteg. Allt
-          du behöver på ett ställe för att hålla dig organiserad och motiverad.
+      <div className="w-full md:w-1/2 bg-secondary p-2 rounded-lg text-center">
+        <h3 className="text-base font-semibold text-text mb-1">För Elever</h3>
+        <p className="text-xs text-text-light mb-2">
+          Se dina lektioner, scheman och framsteg på ett ställe – håll dig
+          organiserad.
         </p>
         <img
           src={studentImg}
           alt="För Elever"
-          className="mx-auto max-h-40 rounded-md shadow-md"
+          className="mx-auto max-h-20 rounded shadow-sm"
         />
       </div>
     </div>
