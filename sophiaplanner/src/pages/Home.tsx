@@ -21,7 +21,7 @@ const Home = () => {
 
   return (
     <div
-      className="bg-gradient-to-b from-primary to-background h-screen overflow-hidden
+      className="bg-gradient-to-b from-primary to-background min-h-screen overflow-x-hidden
 "
     >
       <Header />
@@ -36,13 +36,13 @@ const Home = () => {
           </p>
         </div>
       </div>
-      <div className="h-[440px] m-5 max-w-6xl mx-auto flex gap-5 rounded-xl p-5">
-        <div className="w-[48%] h-[400px] bg-secondary flex items-center justify-center rounded-xl overflow-hidden">
+      <div className="flex flex-col-reverse md:flex-row gap-6 max-w-6xl mx-auto px-4 py-6 md:h-[500px]">
+        <div className="w-full md:w-1/2 bg-secondary rounded-xl shadow-md p-4 flex items-center justify-center">
           <FramerCarousel />
         </div>
-        <div className="w-[48%] h-[400px] bg-secondary flex items-center justify-center rounded-xl">
+        <div className="w-full md:w-1/2 bg-secondary rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
           {/* Video Section */}
-          <div className="m-5 text-center">
+          <div className="w-full text-center">
             <video
               ref={videoRef}
               src={demoVideo}

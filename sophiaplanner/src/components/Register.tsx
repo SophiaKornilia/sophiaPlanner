@@ -382,10 +382,10 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
   };
 
   return (
-    <div className="w-full max-w-[700px] h-full bg-secondary rounded-xl shadow-lg px-6 py-6 flex flex-col md:flex-row gap-6 overflow-hidden">
-      <div className="w-full max-w-4xl h-full bg-secondary rounded-xl  px-4 py-5 sm:px-6 sm:py-6 flex flex-col md:flex-row gap-6 overflow-hidden">
+    <>
+      <div className="w-full max-w-xl bg-secondary rounded-xl px-3 py-4 sm:px-6 sm:py-6 flex flex-col md:flex-row gap-4 overflow-y-auto max-h-[90vh]">
         {/* Vänster kolumn */}
-        <div className="w-full md:w-1/2 text-left text-text px-2">
+        <div className="w-full md:w-1/2 text-text px-1 text-center md:text-left text-xs sm:text-sm">
           <h2 className="text-base sm:text-lg font-bold mb-2 leading-snug">
             Registrera dig som lärare
           </h2>
@@ -400,13 +400,13 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
         </div>
 
         {/* Formulär */}
-        <form className="w-full md:w-1/2 flex flex-col items-center gap-3">
+        <form className="w-full md:w-1/2 flex flex-col gap-3">
           <div className="w-full">
-            <label className="block text-xs font-semibold text-text mb-1">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1">
               Namn:
             </label>
             <input
-              className="w-full p-2 border rounded-md text-xs"
+              className="w-full p-1.5 sm:p-2 border rounded-md text-[11px] sm:text-xs"
               type="text"
               value={formData.name}
               onChange={(e) =>
@@ -416,12 +416,12 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
             />
           </div>
           <div className="w-full">
-            <label className="block text-xs font-semibold text-text mb-1">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1">
               Email:
             </label>
             <input
               ref={emailInputRef}
-              className="w-full p-2 border rounded-md text-xs"
+              className="w-full p-1.5 sm:p-2 border rounded-md text-[11px] sm:text-xs"
               type="email"
               value={formData.email}
               onChange={(e) =>
@@ -431,11 +431,11 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
             />
           </div>
           <div className="w-full">
-            <label className="block text-xs font-semibold text-text mb-1">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1">
               Lösenord (minst 6 tecken):
             </label>
             <input
-              className="w-full p-2 border rounded-md text-xs"
+              className="w-full p-1.5 sm:p-2 border rounded-md text-[11px] sm:text-xs"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -443,11 +443,11 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
             />
           </div>
           <div className="w-full">
-            <label className="block text-xs font-semibold text-text mb-1">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1">
               Upprepa lösenord:
             </label>
             <input
-              className="w-full p-2 border rounded-md text-xs"
+              className="w-full p-1.5 sm:p-2 border rounded-md text-[11px] sm:text-xs"
               type="password"
               value={passwordRepeat}
               onChange={(e) => setPasswordRepeat(e.target.value)}
@@ -455,7 +455,7 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
             />
           </div>
 
-          <label className="text-xs text-text leading-snug">
+          <label className="text-[11px] sm:text-xs text-text leading-snug">
             <input
               type="checkbox"
               checked={formData.gdpr}
@@ -477,7 +477,9 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
 
           <button
             type="button"
-            className="bg-accent text-white px-4 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition duration-300 w-full md:w-auto text-xs"
+            className="bg-accent text-white px-3 py-1.5 sm:px-4 sm:py-2 
+            rounded-lg font-semibold hover:bg-opacity-80 transition duration-300 
+            w-full md:w-auto text-[11px] sm:text-xs"
             onClick={handleClick}
           >
             Registrera
@@ -512,7 +514,7 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

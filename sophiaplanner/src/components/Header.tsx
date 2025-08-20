@@ -1,8 +1,10 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/SophiaPlanner_logo.png";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Register from "./Register";
+import { MobileMenu } from "./MobileMenu";
+import { AnimatePresence } from "framer-motion";
 
 export const Header = () => {
   const { logout, user } = useContext(AuthContext);
@@ -19,28 +21,55 @@ export const Header = () => {
 
   // Effekt för att uppdatera `isMobileView` vid ändring av skärmstorlek
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth < 640);
+    const mediaQuery = window.matchMedia("(max-width: 639px)");
+
+    const handleResize = (e: MediaQueryListEvent) => {
+      setIsMobileView(e.matches);
     };
 
-    window.addEventListener("resize", handleResize);
+    setIsMobileView(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleResize);
+
     return () => {
-      window.removeEventListener("resize", handleResize);
+      mediaQuery.removeEventListener("change", handleResize);
     };
   }, []);
 
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     setIsMobileView(window.innerWidth < 640);
+  //   };
+
+  //   window.addEventListener("resize", handleResize);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
+
   // Hantera utloggning
-  const handleLogoutClick = async () => {
+  const handleLogoutClick = useCallback(async () => {
     await logout();
     setMenuOpen(false); // Stäng menyn vid utloggning
     navigate("/");
-  };
+  }, [logout, navigate]);
 
   // Hantera visning av registreringskomponenten
-  const handleShowRegister = () => {
+  const handleShowRegister = useCallback(() => {
     setShowRegister(true); // Visa Register-komponenten
     setMenuOpen(false);
-  };
+  }, []);
+
+  const toggleMenu = useCallback(() => {
+    setMenuOpen((prev) => !prev);
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+  }, []);
+
+  const handleCloseRegister = useCallback(() => {
+    setShowRegister(false);
+  }, []);
 
   return (
     <>
@@ -77,7 +106,7 @@ export const Header = () => {
             {/* Hamburgermeny för mobil */}
             <button
               className="sm:hidden focus:outline-none"
-              onClick={() => setMenuOpen((prev) => !prev)}
+              onClick={toggleMenu}
             >
               <span className="block w-6 h-1 bg-text mb-1"></span>
               <span className="block w-6 h-1 bg-text mb-1"></span>
@@ -98,7 +127,7 @@ export const Header = () => {
                   <Link
                     to="/LoginPage"
                     className="bg-accent text-white px-4 py-2 rounded-md hover:bg-opacity-80 "
-                    onClick={() => setMenuOpen(false)}
+                    onClick={closeMenu}
                   >
                     Logga in
                   </Link>
@@ -116,93 +145,19 @@ export const Header = () => {
       </header>
 
       {/* Mobilmeny */}
-      {menuOpen && (
-        <nav className="fixed top-20 left-0 w-full bg-white text-text shadow-md sm:hidden z-20">
-          <ul className="flex flex-col space-y-2 p-4">
-            {user ? (
-              user.role === "teacher" ? (
-                /* Lärarmeny */
-                <>
-                  <li>
-                    <NavLink
-                      to="/DashboardTeacher"
-                      className="block w-full text-left"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Översikt
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to="/CreateStudentAccount"
-                      className="block w-full text-left"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Skapa elevkonto
-                    </NavLink>
-                  </li>
-                  {/* <li>
-                    <NavLink
-                      to="/HandleAccount"
-                      className="block w-full text-left"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Hantera mina konton
-                    </NavLink>
-                  </li> */}
-                  <li>
-                    <NavLink
-                      to="/CreateLessonPlan"
-                      className="block w-full text-left"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Skapa elevplaneringar
-                    </NavLink>
-                  </li>
-                  <li>
-                    <button
-                      className="block w-full text-left text-red-600 font-bold"
-                      onClick={handleLogoutClick}
-                    >
-                      Logga ut
-                    </button>
-                  </li>
-                </>
-              ) : (
-                /* Meny för elever */
-                <li>
-                  <button
-                    className="block w-full text-left text-red-600 font-bold"
-                    onClick={handleLogoutClick}
-                  >
-                    Logga ut
-                  </button>
-                </li>
-              )
-            ) : (
-              <>
-                <li>
-                  <Link
-                    to="/LoginPage"
-                    className="block w-full text-left"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Logga in
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    className="block w-full text-left contrast-more:text-highContrastText"
-                    onClick={handleShowRegister}
-                  >
-                    Registrera
-                  </button>
-                </li>
-              </>
-            )}
-          </ul>
-        </nav>
-      )}
+      <AnimatePresence>
+        {menuOpen && isMobileView && (
+          <MobileMenu
+            isOpen={menuOpen}
+            handleClose={closeMenu}
+            userRole={user?.role as "teacher" | "student" | undefined}
+            isLoggedIn={!!user}
+            onLogout={handleLogoutClick}
+            onRegister={handleShowRegister}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Meny för lärare */}
       {user?.role === "teacher" && (
         <div className="hidden sm:flex items-center justify-end px-8 bg-primary h-14">
@@ -259,7 +214,7 @@ export const Header = () => {
           <Register setShowRegister={setShowRegister} />
           <button
             className="absolute top-4 right-4 bg-primary text-white px-4 py-2 rounded-md"
-            onClick={() => setShowRegister(false)}
+            onClick={handleCloseRegister}
           >
             Stäng
           </button>
