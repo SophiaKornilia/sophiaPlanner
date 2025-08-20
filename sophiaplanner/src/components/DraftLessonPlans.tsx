@@ -29,6 +29,8 @@ export const DraftLessonPlans = () => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  console.log("katodo: fix later:", error);
+  
 
   // Hämtar lektionsplaneringar när användarens ID ändras
   useEffect(() => {

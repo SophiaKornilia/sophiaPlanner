@@ -354,6 +354,8 @@ const Register: React.FC<RegisterProps> = ({ setShowRegister }) => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Katodo: fix for later:", data);
+
         setSuccess(true);
         setSaveModalTitle("Yaay!");
         setSaveModalText(
