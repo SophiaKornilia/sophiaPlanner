@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { Header } from "../components/Header";
+import { Header } from "../components/header/Header";
 import { StudentLessonPlans } from "../components/StudentLessonplans";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";

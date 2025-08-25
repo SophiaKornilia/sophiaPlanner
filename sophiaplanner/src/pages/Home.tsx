@@ -1,7 +1,7 @@
 import demoVideo from "../../src/assets/video/lessonplaninfovideo.mp4";
 import photo from "../assets/images/SophiaPlanner_logo.png";
 import { FramerCarousel } from "../components/FramerCarousel";
-import { Header } from "../components/Header";
+import { Header } from "../components/header/Header";
 import { useRef, useState } from "react";
 
 const Home = () => {

@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { DraftLessonPlans } from "../components/DraftLessonPlans";
-import { Header } from "../components/Header";
+import { Header } from "../components/header/Header";
 import { ShowStudentCard } from "../components/ShowStudentCard";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";

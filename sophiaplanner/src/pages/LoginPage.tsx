@@ -1,4 +1,4 @@
-import { Header } from "../components/Header";
+import { Header } from "../components/header/Header";
 import { useContext, useState } from "react";
 import "../styles/index.css";
 import API_BASE_URL from "../../config/vercel-config";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useTokenService } from "../utils/tokenUtils";
 import { AuthContext } from "../context/AuthContext";
+import { RotatingLines } from "react-loader-spinner";
 
 interface loginData {
   identification: string;
@@ -27,6 +28,8 @@ const Login = () => {
   const [saveModalTitle, setSaveModalTitle] = useState<string>("");
   const [alertModal, setAlertModal] = useState<boolean>(false);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   // Funktion som hanterar inloggningsförsök
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +49,7 @@ const Login = () => {
       return;
     }
 
+    setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
@@ -130,6 +134,8 @@ const Login = () => {
         "Kunde inte ansluta till servern. Kontrollera din internetanslutning."
       );
       setAlertModal(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -188,10 +194,21 @@ const Login = () => {
             required
           ></input>
           <button
-            className=" contrast-more:text-highContrastText custom-button hover:bg-opacity-80 w-full lg:max-w-xs md:w-full py-3 "
+            className=" contrast-more:text-highContrastText custom-button hover:bg-opacity-80 w-full lg:max-w-xs md:w-full py-3 !flex !items-center !justify-center !text-center"
             onClick={handleLogin}
+            disabled={loading}
           >
-            Logga in
+            {loading ? (
+              <RotatingLines
+                strokeColor="white"
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="24"
+                visible={true}
+              />
+            ) : (
+              "Logga in"
+            )}
           </button>
         </form>
       </div>

@@ -73,7 +73,7 @@ export const MobileMenu = ({
   onRegister: () => void;
 }) => {
   return (
-    <motion.nav
+    <motion.nav aria-label="Mobilmeny"
       initial="closed"
       animate={isOpen ? "open" : "closed"}
       exit="closed"

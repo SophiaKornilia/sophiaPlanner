@@ -13,7 +13,7 @@ const InfoTeachersStudents = () => (
         </p>
         <img
           src={teacherImg}
-          alt="För Lärare"
+          alt="För lärare"
           className="mx-auto max-h-20 rounded shadow-sm"
         />
       </div>
@@ -27,7 +27,7 @@ const InfoTeachersStudents = () => (
         </p>
         <img
           src={studentImg}
-          alt="För Elever"
+          alt="För elever"
           className="mx-auto max-h-20 rounded shadow-sm"
         />
       </div>

@@ -42,12 +42,12 @@ export const FramerCarousel = () => {
               <motion.div
                 key={slide.id}
                 className="absolute inset-0 w-full min-h-[400px] md:h-full flex items-center justify-center bg-secondary px-4 py-6 md:px-0 md:py-0"
-                initial={{ x: 300 }} // Börjar från höger
-                animate={{ x: 0 }} // Flyttar in till mitten
-                exit={{ x: -300 }} // Försvinner till vänster
-                transition={{ duration: 0.5 }} // 0.5 sekunders animering
+                initial={{ x: 300 }} 
+                animate={{ x: 0 }} 
+                exit={{ x: -300 }} 
+                transition={{ duration: 0.5 }} 
               >
-                {slide.content} {/* Rendera innehållet (din komponent) */}
+                {slide.content}
               </motion.div>
             )
         )}
