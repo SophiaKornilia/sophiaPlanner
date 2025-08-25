@@ -1,7 +1,7 @@
 import { SitemapStream, streamToPromise } from "sitemap";
 import { writeFileSync } from "fs";
 
-// Rutterna för din webbplats
+// Rutterna för webbplatsen
 const routes = [
   { path: "/", changefreq: "daily", priority: 1.0 },
   { path: "/CreateLessonPlan", changefreq: "monthly", priority: 0.8 },
@@ -32,7 +32,6 @@ sitemap.end();
 streamToPromise(sitemap)
   .then((data) => {
     writeFileSync("./public/sitemap.xml", data);
-    console.log("Sitemap skapad!");
   })
   .catch((err) => {
     console.error("Ett fel uppstod:", err);

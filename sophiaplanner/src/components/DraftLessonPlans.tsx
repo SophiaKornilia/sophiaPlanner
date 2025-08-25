@@ -1,14 +1,21 @@
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import API_BASE_URL from "../../config/vercel-config";
+import * as motion from "motion/react-client";
+import { AnimatePresence } from "motion/react";
+import { Loader } from "./Loader";
 
 interface LessonPlan {
   id: string;
   title: string;
   content: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: FirestoreTimestamps;
+  updatedAt: FirestoreTimestamps;
 }
+
+type FirestoreTimestamps = {
+  _seconds: number;
+};
 
 export const DraftLessonPlans = () => {
   const { user } = useContext(AuthContext);
@@ -19,20 +26,20 @@ export const DraftLessonPlans = () => {
     useState<LessonPlan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
-  console.log("userid", user?.id);
-  console.log(error);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  console.log("katodo: fix later:", error);
+  
 
   // Hämtar lektionsplaneringar när användarens ID ändras
   useEffect(() => {
     if (!user) {
       console.log("User is not authenticated yet.");
-      return; // Vänta tills `user` är satt
+      return; 
     }
 
-    // Hämtar lektionsplaneringar från backend
+    // Hämtar lektionsplaneringar från server
     const fetchLessonPlans = async () => {
       const bearerToken = localStorage.getItem("idToken");
 
@@ -72,15 +79,19 @@ export const DraftLessonPlans = () => {
   }, [user?.id]);
 
   // Funktion för att formatera datum
-  const formatDate = (timestamp: any) => {
+  const formatDate = (timestamp: FirestoreTimestamps): string => {
     if (timestamp?._seconds) {
-      return new Date(timestamp._seconds * 1000).toLocaleString();
+      return new Date(timestamp._seconds * 1000).toLocaleString("sv-SE", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
     }
-    return timestamp;
+    return "Ogiltigt datum";
   };
 
   // Rendera laddningsstatus
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader></Loader>;
 
   return (
     <div className="bg-secondary p-6 rounded-lg  w-full h-full max-h-[400px] flex flex-col  md:max-h-[500px]">
@@ -113,9 +124,12 @@ export const DraftLessonPlans = () => {
         <p className="text-text">Inga planeringar hittades.</p>
       ) : (
         <ul className="overflow-y-auto max-h-[300px] space-y-2">
-          {lessonPlans.map((lesson) => (
-            <li
+          {lessonPlans.map((lesson, index) => (
+            <motion.li
               key={lesson.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.2 }}
               className="bg-primary text-white p-4 rounded-md shadow  transition duration-300 cursor-pointer hover:bg-accent contrast-more:text-highContrastText"
               onClick={() => {
                 setSelectedLessonPlan(lesson);
@@ -123,34 +137,41 @@ export const DraftLessonPlans = () => {
               }}
             >
               <h4 className="text-lg font-semibold">{lesson.title}</h4>
-            </li>
+            </motion.li>
           ))}
         </ul>
       )}
       {/* Modal för elevinformation */}
-      {isModalOpen && selectedLessonPlan && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-primary rounded-lg p-6 w-full max-w-md mx-4 shadow-lg overflow-y-auto">
-            <h2 className="text-2xl font-bold text-white mb-4 text-center">
-              Elevinformation
-            </h2>
-            <p className="text-lg text-white">
-              <strong>Titel:</strong> {selectedLessonPlan.title}
-            </p>
-            <p className="text-lg text-white mt-2">
-              <strong>Skapad:</strong>{" "}
-              {formatDate(selectedLessonPlan.createdAt)}
-            </p>
+      <AnimatePresence>
+        {isModalOpen && selectedLessonPlan && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          >
+            <div className="bg-primary rounded-lg p-6 w-full max-w-md mx-4 shadow-lg overflow-y-auto">
+              <h2 className="text-2xl font-bold text-white mb-4 text-center">
+                Elevinformation
+              </h2>
+              <p className="text-lg text-white">
+                <strong>Titel:</strong> {selectedLessonPlan.title}
+              </p>
+              <p className="text-lg text-white mt-2">
+                <strong>Skapad:</strong>{" "}
+                {formatDate(selectedLessonPlan.createdAt)}
+              </p>
 
-            <button
-              onClick={closeModal}
-              className="mt-6 bg-secondary text-white w-full py-2 rounded hover:bg-accent hover:text-white transition"
-            >
-              Stäng
-            </button>
-          </div>
-        </div>
-      )}
+              <button
+                onClick={closeModal}
+                className="mt-6 bg-secondary text-white w-full py-2 rounded hover:bg-accent hover:text-white transition"
+              >
+                Stäng
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

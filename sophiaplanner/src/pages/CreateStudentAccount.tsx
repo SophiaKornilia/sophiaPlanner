@@ -1,7 +1,7 @@
 // import { useNavigate } from "react-router-dom";
 
 import { useContext, useEffect } from "react";
-import { Header } from "../components/Header";
+import { Header } from "../components/header/Header";
 import { RegisterStudent } from "../components/RegisterStudent";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";

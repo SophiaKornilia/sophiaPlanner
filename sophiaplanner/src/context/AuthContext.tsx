@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import API_BASE_URL from "../../config/vercel-config";
-
+import { useContext } from "react";
 /*Skapar en kontext för autentisering och användarhantering
  Context används för att dela autentiseringsstatus och användardata över hela applikationen.
   Definierar strukturen för vad som finns i AuthContext.
@@ -11,6 +11,7 @@ interface AuthContextProps {
   user: user | null;
   setUser: (user: user | null) => void;
   isAuthenticated: boolean;
+  setIsAuthenticated: (value: boolean) => void;
 }
 
 // Skapar själva kontexten med standardvärden
@@ -19,6 +20,7 @@ export const AuthContext = createContext<AuthContextProps>({
   user: null,
   setUser: () => {},
   isAuthenticated: false,
+  setIsAuthenticated: () => {},
 });
 
 // Används för att specificera att komponenten tar emot ReactNode som barn.
@@ -47,6 +49,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const idToken = localStorage.getItem("idToken");
     const sessionId = localStorage.getItem("sessionId");
 
+ 
+
     // Verifierar om användaren är inloggad
     const verifyLogin = async () => {
       try {
@@ -74,13 +78,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           console.log("response data", data);
 
           setUser({
-            id: data.uid,
-            role: data.role,
-            name: data.name,
-            identification: data.identification,
-          });
-
-          console.log("User set in AuthContext:", {
             id: data.uid,
             role: data.role,
             name: data.name,
@@ -137,8 +134,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Returnerar AuthContext med aktuella värden
   return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUser, isAuthenticated, setIsAuthenticated, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
+};
+
+//useAuth är en egen hook som hämtar autentiseringsdata från AuthContext och säkerställer att den bara används inom en AuthProvider.
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+
+  return context;
 };

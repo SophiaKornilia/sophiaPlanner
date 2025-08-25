@@ -40,7 +40,6 @@ export const ShowStudentCard = () => {
     }
     // Hämta JWT-token för autentisering
     const bearerToken = localStorage.getItem("idToken");
-    console.log("bearerToken", bearerToken);
     if (!bearerToken) {
       setError("Authentication token is missing");
       setLoading(false);
@@ -71,7 +70,7 @@ export const ShowStudentCard = () => {
             setError(null);
           }
         } else {
-          console.log("response", response);
+       
           if (data.message === "No students found for this teacher.") {
             setStudents([]);
             setError(null);

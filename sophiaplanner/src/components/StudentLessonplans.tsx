@@ -6,8 +6,12 @@ interface LessonPlan {
   id: string;
   title: string;
   content: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: FirestoreTimestamps;
+  updatedAt: FirestoreTimestamps;
+}
+
+type FirestoreTimestamps = {
+  _seconds: number; 
 }
 
 // Komponent för att visa och hantera elevens lektionsplaner
@@ -41,6 +45,7 @@ export const StudentLessonPlans = () => {
       }
 
       const data = await response.json();
+   
       return data.lessonPlans;
     } catch (err) {
       console.error("Error fetching lesson plans:", err);

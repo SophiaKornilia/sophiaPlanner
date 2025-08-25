@@ -1,4 +1,4 @@
-import { Header } from "../components/Header";
+import { Header } from "../components/header/Header";
 import { useContext, useState } from "react";
 import "../styles/index.css";
 import API_BASE_URL from "../../config/vercel-config";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useTokenService } from "../utils/tokenUtils";
 import { AuthContext } from "../context/AuthContext";
+import { RotatingLines } from "react-loader-spinner";
 
 interface loginData {
   identification: string;
@@ -22,11 +23,13 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { scheduleTokenRefresh } = useTokenService();
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, setIsAuthenticated } = useContext(AuthContext);
   const [saveModalText, setSaveModalText] = useState<string>("");
   const [saveModalTitle, setSaveModalTitle] = useState<string>("");
   const [alertModal, setAlertModal] = useState<boolean>(false);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   // Funktion som hanterar inloggningsförsök
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +49,8 @@ const Login = () => {
       return;
     }
 
+    setLoading(true);
     try {
-      console.log("api base url", API_BASE_URL);
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         credentials: "include",
@@ -59,7 +62,6 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("User logedin successfully", data);
 
         // Navigera till rätt dashboard
         if (data.teacherRole === "teacher") {
@@ -77,22 +79,25 @@ const Login = () => {
               String(Date.now() + data.expiresIn * 1000)
             );
 
+            setIsAuthenticated(true);
+
             // Schemalägger tokenuppdatering
             scheduleTokenRefresh();
-            console.log("Token set in context:", data.accessToken);
-
-            console.log("Tokens sparade i LocalStorage.");
           }
           navigate("/DashboardTeacher");
           console.log("userlog", user);
         } else if (data.user.role === "student") {
           if (data.sessionId) {
-            setUser({
+            const newUser = {
               name: data.user.name,
               role: data.user.role,
               id: data.user.userName,
               identification: data.user.userName,
-            });
+            };
+
+            setUser(newUser);
+            setIsAuthenticated(true);
+
             // Lagrar session och expiration-tid i localStorage
             localStorage.setItem("sessionId", data.sessionId);
             localStorage.setItem(
@@ -101,6 +106,7 @@ const Login = () => {
             );
             console.log("Tokens sparade i LocalStorage.");
           }
+          console.log("token sparas och den ska navigera");
           navigate("/DashboardStudent");
         } else {
           console.log("Ingen roll satt/hittades!");
@@ -128,6 +134,8 @@ const Login = () => {
         "Kunde inte ansluta till servern. Kontrollera din internetanslutning."
       );
       setAlertModal(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -186,10 +194,21 @@ const Login = () => {
             required
           ></input>
           <button
-            className=" contrast-more:text-highContrastText custom-button hover:bg-opacity-80 w-full lg:max-w-xs md:w-full py-3 "
+            className=" contrast-more:text-highContrastText custom-button hover:bg-opacity-80 w-full lg:max-w-xs md:w-full py-3 !flex !items-center !justify-center !text-center"
             onClick={handleLogin}
+            disabled={loading}
           >
-            Logga in
+            {loading ? (
+              <RotatingLines
+                strokeColor="white"
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="24"
+                visible={true}
+              />
+            ) : (
+              "Logga in"
+            )}
           </button>
         </form>
       </div>
